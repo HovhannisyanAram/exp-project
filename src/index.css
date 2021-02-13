@@ -1,25 +1,22 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
-.card {
+.task {
   width: 150px;
   padding: 25px;
   border: 1px solid black;
   border-radius: 5px;
 }
 
-.card_wrapper {
+.task_wrapper {
   display: flex;
   justify-content: space-between;
   width: 70%;
@@ -27,4 +24,14 @@ code {
 }
 .card.active {
   background-color: rgba(255,0,255,.4);
+}
+
+.country {
+  color:red
+}
+.country.armenia {
+  color:blue
+}
+.img {
+  width:150px;
 }
