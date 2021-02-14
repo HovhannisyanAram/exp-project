@@ -14,6 +14,13 @@ class AddTask extends React.Component {
 
   render() {
     const { inputValue } = this.state;
+    const {handleSubmit} = this.props;
+    const handleS = () => {
+      handleSubmit(inputValue);
+      this.setState({
+          inputValue: ''
+      });
+    }
     return(
       <div>
         <input
@@ -22,11 +29,13 @@ class AddTask extends React.Component {
           onChange={this.handleChange}
           value={inputValue}
         />
-        <button>Add</button>
+        <button
+          onClick={handleS}
+        >
+          Add
+        </button>
       </div>
-    );
+    );  
   }
-
 };
-
 export default AddTask;

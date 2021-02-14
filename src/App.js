@@ -1,18 +1,27 @@
+import React, { Component } from 'react';
 import './App.css';
-
 import ToDo from './components/ToDo/index';
+import image from './assets/images/Без названия';
 
+class App extends Component {
+  state = {
+    counter: 0,
+  };
 
-function App() {
- 
+  plusCounter = () => {
+    this.setState({
+      counter: this.state.counter + 1,
+    })
+  }
 
-  return (
-    <>
-      <div className="app">
-        <ToDo />
-      </div>
-    </>
-  );
-}
+  render() {
+    return (
+        <div className="App">
+          <img src={image} alt="person" />
+          <ToDo />
+        </div>
+    );
+  };
+};
 
 export default App;
