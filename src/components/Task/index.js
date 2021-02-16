@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from './task.module.css';
-const Task = ({ task, active  ,active2}) => {
+const Task = ({ task, active ,active2}) => {
     const cls = [styles.task];
     if (active){
         cls.push(styles.first);
