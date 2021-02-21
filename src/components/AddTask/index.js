@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { Form, Button } from 'react-bootstrap';
 class AddTask extends React.Component {
   state = {
     inputValue: "",
@@ -12,28 +13,37 @@ class AddTask extends React.Component {
     })
   };
 
+  handleS = ({ key, type }) => {
+    if(type === "keypress" && key !== "Enter") return;
+
+    const {handleSubmit} = this.props;
+    const { inputValue } = this.state;
+    
+    handleSubmit(inputValue);
+    this.setState({
+        inputValue: ''
+    });
+  }
+
   render() {
     const { inputValue } = this.state;
-    const {handleSubmit} = this.props;
-    const handleS = () => {
-      handleSubmit(inputValue);
-      this.setState({
-          inputValue: ''
-      });
-    }
     return(
-      <div>
-        <input
+      <div className="d-flex justify-content-center mt-4">
+        <Form.Control
           type="text"
           placeholder="Add text"
           onChange={this.handleChange}
+          onKeyPress={this.handleS}
           value={inputValue}
+          style={{width: "70%"}}
         />
-        <button
-          onClick={handleS}
+        <Button
+          variant="primary"
+          onClick={this.handleS}
+          disabled={!!!inputValue}
         >
           Add
-        </button>
+        </Button>
       </div>
     );  
   }

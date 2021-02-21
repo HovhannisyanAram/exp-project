@@ -4,35 +4,76 @@ import AddTask from '../AddTask/index';
 import idGenerator from '../../helpers/idGenerator';
 import {Container, Row, Col} from 'react-bootstrap';
 
-import styles from './task.module.css';
+
+// import styles from './task.module.css';
 class ToDo extends React.Component {
   state = {
-    tasks: ['Task 1 ', 'Task 2', 'Task 3'],
+    tasks: [
+      {
+        _id: idGenerator(),
+        title: 'AngularJs',
+      },
+      {
+        _id: idGenerator(),
+        title: 'React.js',
+      },
+      {
+        _id: idGenerator(),
+        title: 'Vue.Js'
+      },
+    ],
+    removeTasks: [],
+  }
+
+  handleDeleteOneTask = (id) => {
+    let tasks = [...this.state.tasks];
+    tasks = tasks.filter(item => item._id !== id);
+    this.setState({
+      tasks,
+    });
+    // const idx = tasks.findIndex(item => item._id === id);
+    // tasks.splice(idx, 1)
+  };
+
+  toggleSetRemoveTaskIds = (_id) => {
+    let removeTasks = [...this.state.removeTasks];
+    if(removeTasks.includes(_id)) {
+      removeTasks = removeTasks.filter(id => id !== _id)
+    } else {
+      removeTasks.push(_id);
+    };
+    
+    this.setState({
+      removeTasks
+    }); 
   }
 
   handleSubmit = (value) => {
     if (!value) return;
     const tasks = [...this.state.tasks];
-    tasks.push(value);
+    tasks.push({
+      _id: idGenerator(),
+      title: value,
+    });
     this.setState({
         tasks
     });
 }
   render() {
     const { tasks } = this.state;
-    const Tasks = this.state.tasks.map((task, index) => {
+    const Tasks = this.state.tasks.map(task => {
     return (
       <Col
-        key={idGenerator()}
-        className="d-flex justify-content-center mt-3"
+        key={task._id}
+        className="d-flex justify-content-center mt-4"
         xs={12}
         md={6}
         xl={4}
       >
         <Task
           task={task}
-          active={index === 1}
-          active2={index === 2}
+          handleDeleteOneTask={this.handleDeleteOneTask}
+          toggleSetRemoveTaskIds={this.toggleSetRemoveTaskIds}
         />
       </Col>
     )
@@ -41,7 +82,7 @@ class ToDo extends React.Component {
     return (
       <div>
         <Container>
-          <Row>
+          <Row className="mt-4">
             <Col>
               <h1>ToDo Component</h1>
               <AddTask
@@ -49,11 +90,9 @@ class ToDo extends React.Component {
               />
             </Col>
           </Row>
-          <Row>
-            <div className={styles.tasksWrapper}>
+          <Row className="mt-4">
               {!tasks.length && <div>Tasks is Empty</div>}
               {Tasks}
-            </div>
           </Row>
         </Container>
       </div>
