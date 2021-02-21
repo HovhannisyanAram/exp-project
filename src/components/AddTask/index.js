@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Form, Button } from 'react-bootstrap';
-class AddTask extends React.Component {
+class AddTask extends React.PureComponent {
   state = {
     inputValue: "",
   };

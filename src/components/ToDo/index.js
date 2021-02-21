@@ -7,7 +7,7 @@ import { Container, Row, Col, Button } from 'react-bootstrap';
 
 
 // import styles from './task.module.css';
-class ToDo extends React.Component {
+class ToDo extends React.PureComponent {
   state = {
     tasks: [
       {
@@ -23,7 +23,7 @@ class ToDo extends React.Component {
         title: 'Vue.Js'
       },
     ],
-    removeTasks: [],
+    removeTasks: new Set(),
   }
   
   
@@ -50,11 +50,11 @@ class ToDo extends React.Component {
   };
 
   toggleSetRemoveTaskIds = (_id) => {
-    let removeTasks = [...this.state.removeTasks];
-    if(removeTasks.includes(_id)) {
-      removeTasks = removeTasks.filter(id => id !== _id)
+    let removeTasks = new Set(this.state.removeTasks);
+    if(removeTasks.has(_id)) {
+      removeTasks.delete(_id)
     } else {
-      removeTasks.push(_id);
+      removeTasks.add(_id);
     };
   
     this.setState({
@@ -64,16 +64,16 @@ class ToDo extends React.Component {
 
   removeSelectedTasks = () => {
     let tasks = [...this.state.tasks];
-    const removeTasks = [...this.state.removeTasks];
-      tasks = tasks.filter(item => !removeTasks.includes(item._id))
+    const { removeTasks } = this.state;
+      tasks = tasks.filter(item => !removeTasks.has(item._id))
     this.setState({
       tasks,
-      removedTasks: [],
+      removedTasks: new Set(),
     })
   };
   render() {
     const { tasks, removeTasks } = this.state;
-    const Tasks = this.state.tasks.map(task => {
+    const Tasks = this.state.tasks.map((task, index) => {
     return (
       <Col
         key={task._id}
@@ -87,6 +87,7 @@ class ToDo extends React.Component {
           handleDeleteOneTask={this.handleDeleteOneTask}
           toggleSetRemoveTaskIds={this.toggleSetRemoveTaskIds}
           disabled={!!removeTasks.length}
+          checked={removeTasks.has(task._id)}
         />
       </Col>
     )
@@ -100,7 +101,7 @@ class ToDo extends React.Component {
               <h1>ToDo Component</h1>
               <AddTask
                 handleSubmit={this.handleSubmit}
-                disabled={!!removeTasks.length}
+                disabled={!!removeTasks.size}
               />
             </Col>
           </Row>
@@ -113,7 +114,7 @@ class ToDo extends React.Component {
               <Button
                 variant="danger"
                 onClick={this.removeSelectedTasks}
-                disabled={!!!removeTasks.length}
+                disabled={!!!removeTasks.size}
               >
                 Remove Selected
               </Button>
