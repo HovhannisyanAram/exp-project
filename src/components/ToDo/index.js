@@ -2,7 +2,8 @@ import React from 'react';
 import Task from '../Task/index';
 import AddTask from '../AddTask/index';
 import idGenerator from '../../helpers/idGenerator';
-import {Container, Row, Col} from 'react-bootstrap';
+import { Container, Row, Col, Button } from 'react-bootstrap';
+
 
 
 // import styles from './task.module.css';
@@ -24,6 +25,19 @@ class ToDo extends React.Component {
     ],
     removeTasks: [],
   }
+  
+  
+  handleSubmit = (value) => {
+    if (!value) return;
+    const tasks = [...this.state.tasks];
+    tasks.push({
+      _id: idGenerator(),
+      title: value,
+    });
+    this.setState({
+      tasks
+    });
+  };
 
   handleDeleteOneTask = (id) => {
     let tasks = [...this.state.tasks];
@@ -42,25 +56,23 @@ class ToDo extends React.Component {
     } else {
       removeTasks.push(_id);
     };
-    
+  
     this.setState({
       removeTasks
     }); 
-  }
+  };
 
-  handleSubmit = (value) => {
-    if (!value) return;
-    const tasks = [...this.state.tasks];
-    tasks.push({
-      _id: idGenerator(),
-      title: value,
-    });
+  removeSelectedTasks = () => {
+    let tasks = [...this.state.tasks];
+    const removeTasks = [...this.state.removeTasks];
+      tasks = tasks.filter(item => !removeTasks.includes(item._id))
     this.setState({
-        tasks
-    });
-}
+      tasks,
+      removedTasks: [],
+    })
+  };
   render() {
-    const { tasks } = this.state;
+    const { tasks, removeTasks } = this.state;
     const Tasks = this.state.tasks.map(task => {
     return (
       <Col
@@ -74,6 +86,7 @@ class ToDo extends React.Component {
           task={task}
           handleDeleteOneTask={this.handleDeleteOneTask}
           toggleSetRemoveTaskIds={this.toggleSetRemoveTaskIds}
+          disabled={!!removeTasks.length}
         />
       </Col>
     )
@@ -87,12 +100,24 @@ class ToDo extends React.Component {
               <h1>ToDo Component</h1>
               <AddTask
                 handleSubmit={this.handleSubmit}
+                disabled={!!removeTasks.length}
               />
             </Col>
           </Row>
           <Row className="mt-4">
               {!tasks.length && <div>Tasks is Empty</div>}
               {Tasks}
+          </Row>
+          <Row className="mt-5">
+            <Col>
+              <Button
+                variant="danger"
+                onClick={this.removeSelectedTasks}
+                disabled={!!!removeTasks.length}
+              >
+                Remove Selected
+              </Button>
+            </Col>
           </Row>
         </Container>
       </div>

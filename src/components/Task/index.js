@@ -1,11 +1,17 @@
+import styles from './task.module.css';
 import { Card, Button } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash, faEdit } from '@fortawesome/free-solid-svg-icons';
 
-const Task = ({ task, handleDeleteOneTask, toggleSetRemoveTaskIds }) => {
+const Task = ({
+  task,
+  disabled,
+  handleDeleteOneTask,
+  toggleSetRemoveTaskIds
+}) => {
   
   return (
-    <Card style={{ width: "18rem" }}>
+    <Card className={styles.card}>
       <Card.Body className="cardBody">
         <div className="d-flex justify-content-end">
           <input
@@ -20,6 +26,7 @@ const Task = ({ task, handleDeleteOneTask, toggleSetRemoveTaskIds }) => {
         </Card.Text>
         <div>
           <Button 
+            disabled={disabled}
             variant="danger"
             onClick={() => handleDeleteOneTask(task._id)}
           >
