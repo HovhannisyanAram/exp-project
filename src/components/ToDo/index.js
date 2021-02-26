@@ -3,9 +3,6 @@ import Task from '../Task/index';
 import AddTask from '../AddTask/index';
 import idGenerator from '../../helpers/idGenerator';
 import { Container, Row, Col, Button } from 'react-bootstrap';
-
-
-
 // import styles from './task.module.css';
 class ToDo extends React.PureComponent {
   state = {
@@ -24,6 +21,7 @@ class ToDo extends React.PureComponent {
       },
     ],
     removeTasks: new Set(),
+    isAllChecked: false,
   }
   
   
@@ -45,8 +43,6 @@ class ToDo extends React.PureComponent {
     this.setState({
       tasks,
     });
-    // const idx = tasks.findIndex(item => item._id === id);
-    // tasks.splice(idx, 1)
   };
 
   toggleSetRemoveTaskIds = (_id) => {
@@ -71,9 +67,25 @@ class ToDo extends React.PureComponent {
       removedTasks: new Set(),
     })
   };
+
+  handleToggleCheckAll = () => {
+    const { tasks, isAllChecked } = this.state;
+    let removeTasks = new Set();
+    if(!isAllChecked) {
+      removeTasks = new Set(this.state.removeTasks);
+      tasks.forEach(task => {
+        removeTasks.add(task._id)
+      })
+    };
+    this.setState({
+      removeTasks,
+      isAllChecked: !isAllChecked,
+    });
+  };
+
   render() {
-    const { tasks, removeTasks } = this.state;
-    const Tasks = this.state.tasks.map((task, index) => {
+    const { tasks, removeTasks, isAllChecked } = this.state;
+    const Tasks = this.state.tasks.map(task => {
     return (
       <Col
         key={task._id}
@@ -86,7 +98,7 @@ class ToDo extends React.PureComponent {
           task={task}
           handleDeleteOneTask={this.handleDeleteOneTask}
           toggleSetRemoveTaskIds={this.toggleSetRemoveTaskIds}
-          disabled={!!removeTasks.length}
+          disabled={!!removeTasks.size}
           checked={removeTasks.has(task._id)}
         />
       </Col>
@@ -94,7 +106,7 @@ class ToDo extends React.PureComponent {
   })
 
     return (
-      <div>
+      <>
         <Container>
           <Row className="mt-4">
             <Col>
@@ -114,14 +126,22 @@ class ToDo extends React.PureComponent {
               <Button
                 variant="danger"
                 onClick={this.removeSelectedTasks}
-                disabled={!!!removeTasks.size}
+                disabled={!!!removeTasks.size || !!!tasks.length}
               >
                 Remove Selected
+              </Button>
+              <Button
+                variant="info"
+                className="ml-4"
+                onClick={this.handleToggleCheckAll}
+                disabled={!!!tasks.length}
+              >
+                {isAllChecked ? "Reset Selects" : "Select All"}
               </Button>
             </Col>
           </Row>
         </Container>
-      </div>
+      </>
     )
   }
 };
