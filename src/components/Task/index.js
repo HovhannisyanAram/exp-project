@@ -5,6 +5,8 @@ import { Card, Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faEdit } from "@fortawesome/free-solid-svg-icons";
 
+import PropTypes from 'prop-types';
+
 const Task = ({
   task,
   disabled,
@@ -46,6 +48,17 @@ const Task = ({
       </Card.Body>
     </Card>
   );
+};
+
+Task.propTypes = {
+  task: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+  }),
+  disabled: PropTypes.bool.isRequired,
+  handleDeleteOneTask: PropTypes.func.isRequired,
+  toggleSetRemoveTaskIds: PropTypes.func.isRequired,
+  checked: PropTypes.bool.isRequired,
 };
 
 export default memo(Task);

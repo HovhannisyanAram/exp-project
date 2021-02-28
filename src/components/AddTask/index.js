@@ -1,10 +1,17 @@
 import React from 'react';
 
 import { Form, Button } from 'react-bootstrap';
+
+import PropTypes from 'prop-types';
 class AddTask extends React.PureComponent {
-  state = {
-    inputValue: "",
-  };
+  constructor(props) {
+    super(props);
+    this.inputRef = React.createRef();
+    this.state = {
+      inputValue: "",
+    };
+  }
+
 
   handleChange = (event) => {
     const { value } = event.target;
@@ -25,6 +32,10 @@ class AddTask extends React.PureComponent {
     });
   }
 
+  componentDidMount() {
+    this.inputRef.current.focus()
+  }
+
   render() {
     const { inputValue } = this.state;
     const {disabled} = this.props;
@@ -39,6 +50,7 @@ class AddTask extends React.PureComponent {
           value={inputValue}
           style={{width: "70%"}}
           disabled={disabled}
+          ref={this.inputRef}
         />
         <Button
           variant="primary"
@@ -51,4 +63,10 @@ class AddTask extends React.PureComponent {
     );  
   }
 };
+
+AddTask.propTypes = {
+  handleSubmit: PropTypes.func.isRequired,
+  disabled: PropTypes.bool.isRequired,
+}
+
 export default AddTask;
