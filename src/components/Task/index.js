@@ -13,6 +13,7 @@ const Task = ({
   handleDeleteOneTask,
   toggleSetRemoveTaskIds,
   checked,
+  handleSetEditTask,
 }) => {
   return (
     <Card className={`${styles.card} ${checked && styles.checked}`}>
@@ -26,8 +27,7 @@ const Task = ({
         </div>
         <Card.Title>{task.title}</Card.Title>
         <Card.Text>
-          Some quick example text to build on the card title and make up the
-          bulk of the card's content.
+          Description: {task.description}
         </Card.Text>
         <div>
           <Button
@@ -41,6 +41,7 @@ const Task = ({
             disabled={disabled}
             variant="warning"
             className="ml-3"
+            onClick={() => handleSetEditTask(task)}
           >
             <FontAwesomeIcon icon={faEdit} />
           </Button>
@@ -54,11 +55,13 @@ Task.propTypes = {
   task: PropTypes.shape({
     _id: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
+    description: PropTypes.string.isRequired,
   }),
   disabled: PropTypes.bool.isRequired,
   handleDeleteOneTask: PropTypes.func.isRequired,
   toggleSetRemoveTaskIds: PropTypes.func.isRequired,
   checked: PropTypes.bool.isRequired,
+  handleSetEditTask: PropTypes.func.isRequired,
 };
 
 export default memo(Task);

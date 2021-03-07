@@ -1,6 +1,8 @@
 import React from 'react';
-import Task from '../Task/index';
-import AddTask from '../AddTask/index';
+import Task from '../Task';
+import AddTask from '../AddTask';
+import Confirm from '../Confirm'
+import EditTaskModal from '../EditTaskModal'; 
 import idGenerator from '../../helpers/idGenerator';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 // import styles from './task.module.css';
@@ -10,27 +12,33 @@ class ToDo extends React.PureComponent {
       {
         _id: idGenerator(),
         title: 'AngularJs',
+        description: 'description of AngularJs'
       },
       {
         _id: idGenerator(),
         title: 'React.js',
+        description: 'description of React.js'
       },
       {
         _id: idGenerator(),
-        title: 'Vue.Js'
+        title: 'Vue.Js',
+        description: 'description of Vue.js'
       },
     ],
     removeTasks: new Set(),
     isAllChecked: false,
+    isConfirmModal: false,
+    editableTask: null,
   }
   
   
-  handleSubmit = (value) => {
-    if (!value) return;
+  handleSubmit = (formData) => {
+    if (!formData.title || !formData.description) return;
     const tasks = [...this.state.tasks];
     tasks.push({
       _id: idGenerator(),
-      title: value,
+      title: formData.title,
+      description: formData.description,
     });
     this.setState({
       tasks
@@ -83,8 +91,42 @@ class ToDo extends React.PureComponent {
     });
   };
 
+  handleToggleOpenModal = () => {
+    this.setState({
+      isConfirmModal: !this.state.isConfirmModal,
+    })
+  };
+
+  handleSetEditTask = (task) => {
+    this.setState({
+      editableTask: task,
+    });
+  };
+
+  editableTaskNull = () => {
+    this.setState({
+      editableTask: null,
+    });
+  };
+
+  handleEditTask = (editTask) => {
+    const tasks = [...this.state.tasks];
+    const idx = tasks.findIndex(task => task._id === editTask._id);
+    tasks[idx] = editTask;
+    this.setState({
+      tasks
+    });
+
+  }
+
   render() {
-    const { tasks, removeTasks, isAllChecked } = this.state;
+    const {
+      tasks,
+      removeTasks,
+      isAllChecked,
+      isConfirmModal,
+      editableTask
+    } = this.state;
     const Tasks = this.state.tasks.map(task => {
     return (
       <Col
@@ -100,6 +142,7 @@ class ToDo extends React.PureComponent {
           toggleSetRemoveTaskIds={this.toggleSetRemoveTaskIds}
           disabled={!!removeTasks.size}
           checked={removeTasks.has(task._id)}
+          handleSetEditTask={this.handleSetEditTask}
         />
       </Col>
     )
@@ -125,7 +168,8 @@ class ToDo extends React.PureComponent {
             <Col>
               <Button
                 variant="danger"
-                onClick={this.removeSelectedTasks}
+                // onClick={this.removeSelectedTasks}
+                onClick={this.handleToggleOpenModal}
                 disabled={!!!removeTasks.size || !!!tasks.length}
               >
                 Remove Selected
@@ -141,6 +185,24 @@ class ToDo extends React.PureComponent {
             </Col>
           </Row>
         </Container>
+        {
+          isConfirmModal
+          &&
+          <Confirm
+            onHide={this.handleToggleOpenModal}
+            onSubmit={this.removeSelectedTasks}
+            message={`Do you want to delete ${removeTasks.size} task?`}
+          />
+        }
+        {
+          editableTask
+          &&
+          <EditTaskModal
+            editableTask={editableTask}
+            onHide={this.editableTaskNull}
+            onSubmit={this.handleEditTask}
+            />
+        }
       </>
     )
   }

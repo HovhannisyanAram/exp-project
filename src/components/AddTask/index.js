@@ -8,27 +8,33 @@ class AddTask extends React.PureComponent {
     super(props);
     this.inputRef = React.createRef();
     this.state = {
-      inputValue: "",
+      title: "",
+      description: "",
     };
   }
 
 
   handleChange = (event) => {
-    const { value } = event.target;
+    const { name, value } = event.target;
     this.setState({
-      inputValue: value
+      [name]: value,
     })
   };
 
   handleS = ({ key, type }) => {
     if(type === "keypress" && key !== "Enter") return;
 
-    const {handleSubmit} = this.props;
-    const { inputValue } = this.state;
+    const { title, description } = this.state;
+    const { handleSubmit } = this.props;
+    const formData = {
+      title,
+      description
+    }
     
-    handleSubmit(inputValue);
+    handleSubmit(formData);
     this.setState({
-        inputValue: ''
+        title: '',
+        description: '',
     });
   }
 
@@ -37,28 +43,41 @@ class AddTask extends React.PureComponent {
   }
 
   render() {
-    const { inputValue } = this.state;
+    const { title, description } = this.state;
     const {disabled} = this.props;
 
     return(
-      <div className="d-flex justify-content-center mt-4">
+      <div className="d-flex flex-column align-items-center mt-4">
         <Form.Control
+          name="title"
           type="text"
-          placeholder="Add text"
+          placeholder="Title"
           onChange={this.handleChange}
           onKeyPress={this.handleS}
-          value={inputValue}
+          value={title}
           style={{width: "70%"}}
           disabled={disabled}
           ref={this.inputRef}
         />
-        <Button
-          variant="primary"
-          onClick={this.handleS}
-          disabled={!!!inputValue}
-        >
-          Add
-        </Button>
+        <Form.Control
+          name="description"
+          placeholder="Description"
+          onChange={this.handleChange}
+          className="my-3"
+          as="textarea"
+          rows={3}
+          style={{width: "70%", resize: 'none'}}
+          value={description}
+        />
+        <div>
+          <Button
+            variant="primary"
+            onClick={this.handleS}
+            disabled={!(!!title && !!description)}
+          >
+            Add
+          </Button>
+        </div>
       </div>
     );  
   }
