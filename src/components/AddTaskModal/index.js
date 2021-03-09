@@ -35,7 +35,7 @@ class AddTaskModal extends React.PureComponent {
       title,
       description,
     };
-    onSubmit(this.state); 
+    onSubmit(formData); 
     onHide();
   };
 
