@@ -1,8 +1,8 @@
 import React from 'react';
 import Task from '../Task';
-import AddTask from '../AddTask';
 import Confirm from '../Confirm'
-import EditTaskModal from '../EditTaskModal'; 
+import AddTaskModal from '../AddTaskModal';
+// import EditTaskModal from '../EditTaskModal'; 
 import idGenerator from '../../helpers/idGenerator';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 // import styles from './task.module.css';
@@ -25,10 +25,11 @@ class ToDo extends React.PureComponent {
         description: 'description of Vue.js'
       },
     ],
-    removeTasks: new Set(),
+    editableTask: null,
     isAllChecked: false,
     isConfirmModal: false,
-    editableTask: null,
+    removeTasks: new Set(),
+    isOpenAddTaskModal: false
   }
   
   
@@ -116,7 +117,12 @@ class ToDo extends React.PureComponent {
     this.setState({
       tasks
     });
+  };
 
+  toggleOpenAddTaskModal = () => {
+    this.setState({
+      isOpenAddTaskModal: !this.state.isOpenAddTaskModal,
+    })
   }
 
   render() {
@@ -124,25 +130,26 @@ class ToDo extends React.PureComponent {
       tasks,
       removeTasks,
       isAllChecked,
+      editableTask,
       isConfirmModal,
-      editableTask
+      isOpenAddTaskModal,
     } = this.state;
     const Tasks = this.state.tasks.map(task => {
     return (
       <Col
-        key={task._id}
-        className="d-flex justify-content-center mt-4"
         xs={12}
         md={6}
         xl={4}
+        key={task._id}
+        className="d-flex justify-content-center mt-4"
       >
         <Task
           task={task}
-          handleDeleteOneTask={this.handleDeleteOneTask}
-          toggleSetRemoveTaskIds={this.toggleSetRemoveTaskIds}
           disabled={!!removeTasks.size}
           checked={removeTasks.has(task._id)}
           handleSetEditTask={this.handleSetEditTask}
+          handleDeleteOneTask={this.handleDeleteOneTask}
+          toggleSetRemoveTaskIds={this.toggleSetRemoveTaskIds}
         />
       </Col>
     )
@@ -153,11 +160,12 @@ class ToDo extends React.PureComponent {
         <Container>
           <Row className="mt-4">
             <Col>
-              <h1>ToDo Component</h1>
-              <AddTask
-                handleSubmit={this.handleSubmit}
-                disabled={!!removeTasks.size}
-              />
+              <Button
+                onClick={this.toggleOpenAddTaskModal}
+                variant="primary"
+              >
+                Add task
+              </Button>
             </Col>
           </Row>
           <Row className="mt-4">
@@ -168,9 +176,8 @@ class ToDo extends React.PureComponent {
             <Col>
               <Button
                 variant="danger"
-                // onClick={this.removeSelectedTasks}
                 onClick={this.handleToggleOpenModal}
-                disabled={!!!removeTasks.size || !!!tasks.length}
+                disabled={!!!removeTasks.size}
               >
                 Remove Selected
               </Button>
@@ -186,22 +193,24 @@ class ToDo extends React.PureComponent {
           </Row>
         </Container>
         {
-          isConfirmModal
-          &&
-          <Confirm
+          isConfirmModal && <Confirm
             onHide={this.handleToggleOpenModal}
             onSubmit={this.removeSelectedTasks}
             message={`Do you want to delete ${removeTasks.size} task?`}
           />
         }
         {
-          editableTask
-          &&
-          <EditTaskModal
+          editableTask && <AddTaskModal
             editableTask={editableTask}
             onHide={this.editableTaskNull}
             onSubmit={this.handleEditTask}
             />
+        }
+        {
+          isOpenAddTaskModal && <AddTaskModal
+            onHide={this.toggleOpenAddTaskModal}
+            onSubmit={this.handleSubmit}
+          />
         }
       </>
     )
