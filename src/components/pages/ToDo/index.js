@@ -1,8 +1,8 @@
 import React from 'react';
-import Task from '../Task';
-import Confirm from '../Confirm'
-import TaskActions from '../TaskActions';
-import dateFormatter from '../../helpers/date';
+import Task from '../../Task';
+import Confirm from '../../Confirm'
+import TaskActions from '../../TaskActions';
+import dateFormatter from '../../../helpers/date';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 // import styles from './task.module.css';
 class ToDo extends React.PureComponent {

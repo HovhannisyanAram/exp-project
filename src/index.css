@@ -9,22 +9,23 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
-.card.active {
-  background-color: rgba(255,0,255,.4);
-}
-
-.country {
-  color:red
-}
-.country.armenia {
-  color:blue
-}
-.img {
-  width:150px;
-}
-
 .cardBody {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+
+.nav-item {
+  padding: 10px 15px;
+  font-style: italic;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+a:hover {
+  text-decoration: none;
+  color:rgba(0, 255, 255, 0.3)
+}
+
+a {
+  color: aqua;
 }

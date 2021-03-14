@@ -2,19 +2,8 @@
   width: 50%;
   background-color: rgba(11, 224, 224, 0.3);
   padding: 50px;
-  color: rgb(69, 69, 122);
+  color: rgb(0, 255, 255);
   margin-left: 10px;
-}
-
-.first {
-  background-color: green;
-}
-
-.second {
-  background-color: yellow;
-}
-.third {
-  transform:scale(1.2);
 }
 
 .card {
