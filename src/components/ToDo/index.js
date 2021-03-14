@@ -1,30 +1,13 @@
 import React from 'react';
 import Task from '../Task';
 import Confirm from '../Confirm'
-import AddTaskModal from '../AddTaskModal';
-// import EditTaskModal from '../EditTaskModal'; 
-import idGenerator from '../../helpers/idGenerator';
+import TaskActions from '../TaskActions';
+import dateFormatter from '../../helpers/date';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 // import styles from './task.module.css';
 class ToDo extends React.PureComponent {
   state = {
-    tasks: [
-      {
-        _id: idGenerator(),
-        title: 'AngularJs',
-        description: 'description of AngularJs'
-      },
-      {
-        _id: idGenerator(),
-        title: 'React.js',
-        description: 'description of React.js'
-      },
-      {
-        _id: idGenerator(),
-        title: 'Vue.Js',
-        description: 'description of Vue.js'
-      },
-    ],
+    tasks: [],
     editableTask: null,
     isAllChecked: false,
     isConfirmModal: false,
@@ -35,22 +18,47 @@ class ToDo extends React.PureComponent {
   
   handleSubmit = (formData) => {
     if (!formData.title || !formData.description) return;
+    formData.date = dateFormatter(formData.date);
     const tasks = [...this.state.tasks];
-    tasks.push({
-      _id: idGenerator(),
-      title: formData.title,
-      description: formData.description,
-    });
-    this.setState({
-      tasks
+    fetch("http://localhost:3001/task", {
+      method: "POST",
+      body: JSON.stringify(formData),
+      headers: {
+        "Content-Type": "application/json"
+      }
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.error) {
+        throw data.error;
+      }
+      tasks.push(data)
+      this.setState({
+        tasks
+      });
+    })
+    .catch(error => {
+      console.log('error', error)
     });
   };
 
   handleDeleteOneTask = (id) => {
-    let tasks = [...this.state.tasks];
-    tasks = tasks.filter(item => item._id !== id);
-    this.setState({
-      tasks,
+    fetch(`http://localhost:3001/task/` + id, {
+      method: "DELETE",
+    })
+    .then(res => res.json())
+    .then(data => {
+      if(data.error) {
+        throw data.error;
+      }
+      let tasks = [...this.state.tasks];
+      tasks = tasks.filter(item => item._id !== id);
+      this.setState({
+        tasks,
+      });
+    })
+    .catch(error => {
+      console.error("Delete task request Error", error);
     });
   };
 
@@ -68,13 +76,27 @@ class ToDo extends React.PureComponent {
   };
 
   removeSelectedTasks = () => {
-    let tasks = [...this.state.tasks];
-    const { removeTasks } = this.state;
-      tasks = tasks.filter(item => !removeTasks.has(item._id))
-    this.setState({
-      tasks,
-      removedTasks: new Set(),
+    fetch("http://localhost:3001/task", {
+      method: "PATCH",
+      body: JSON.stringify({ tasks: Array.from(this.state.removeTasks) }),
+      headers: {
+        "Content-Type": "application/json"
+      },
     })
+    .then(res => res.json())
+    .then(data => {
+      if(data.error) {
+        throw data.error;
+      }
+      let tasks = [...this.state.tasks];
+      const { removeTasks } = this.state;
+      tasks = tasks.filter(item => !removeTasks.has(item._id))
+      this.setState({
+        tasks,
+        removedTasks: new Set(),
+        isAllChecked: false,
+      })
+    });
   };
 
   handleToggleCheckAll = () => {
@@ -111,11 +133,27 @@ class ToDo extends React.PureComponent {
   };
 
   handleEditTask = (editTask) => {
-    const tasks = [...this.state.tasks];
-    const idx = tasks.findIndex(task => task._id === editTask._id);
-    tasks[idx] = editTask;
-    this.setState({
-      tasks
+    fetch('http://localhost:3001/task/' + editTask._id, {
+      method: "PUT",
+      body: JSON.stringify(editTask),
+      headers: {
+        "Content-Type": "application/json",
+      }
+    })
+    .then(res => res.json())
+    .then(data => {
+      if(data.error) {
+        throw data.error
+      };
+      const tasks = [...this.state.tasks];
+      const idx = tasks.findIndex(task => task._id === data._id);
+      tasks[idx] = data;
+      this.setState({
+        tasks
+      });
+    })
+    .catch(error => {
+      console.error("Edit task request error", error);
     });
   };
 
@@ -123,6 +161,22 @@ class ToDo extends React.PureComponent {
     this.setState({
       isOpenAddTaskModal: !this.state.isOpenAddTaskModal,
     })
+  };
+
+  componentDidMount() {
+    fetch("http://localhost:3001/task")
+    .then(res => res.json())
+    .then(data => {
+      if(data.error) {
+        throw data.error;
+      };
+      this.setState({
+        tasks: data
+      })
+    })
+    .catch(error => {
+      console.error("get Tasks request error", error)
+    });
   }
 
   render() {
@@ -137,9 +191,9 @@ class ToDo extends React.PureComponent {
     const Tasks = this.state.tasks.map(task => {
     return (
       <Col
-        xs={12}
         md={6}
         xl={4}
+        xs={12}
         key={task._id}
         className="d-flex justify-content-center mt-4"
       >
@@ -200,14 +254,14 @@ class ToDo extends React.PureComponent {
           />
         }
         {
-          editableTask && <AddTaskModal
+          editableTask && <TaskActions
             editableTask={editableTask}
             onHide={this.editableTaskNull}
             onSubmit={this.handleEditTask}
             />
         }
         {
-          isOpenAddTaskModal && <AddTaskModal
+          isOpenAddTaskModal && <TaskActions
             onHide={this.toggleOpenAddTaskModal}
             onSubmit={this.handleSubmit}
           />

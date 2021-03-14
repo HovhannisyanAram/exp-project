@@ -1,10 +1,11 @@
 import React from "react";
 
 import { Form, Button, Modal } from "react-bootstrap";
-
+import DatePicker from 'react-datepicker';
 import PropTypes from "prop-types";
+import dateFormatter from '../../helpers/date';
 
-class AddTaskModal extends React.PureComponent {
+class TaskActions extends React.PureComponent {
   constructor(props) {
     super(props);
     this.inputRef = React.createRef();
@@ -12,6 +13,7 @@ class AddTaskModal extends React.PureComponent {
       title: "",
       description: "",
       ...props.editableTask,
+      date: props.editableTask ? new Date(props.editableTask.date) : new Date(),
     };
     this.inputRef = React.createRef(null);
   };
@@ -31,20 +33,24 @@ class AddTaskModal extends React.PureComponent {
         ||
       (!title || !description)
     ) return;
-    const formData = {
-      title,
-      description,
-    };
+    const formData = {...this.state};
+    formData.date = dateFormatter(formData.date)
     onSubmit(formData); 
     onHide();
   };
 
+  handleSetDate = (date) => {
+    this.setState({
+      date,
+    });
+  };
+
   componentDidMount() {
     this.inputRef.current.focus();
-  }
+  };
 
   render() {
-    const { title, description } = this.state;
+    const { title, description, date } = this.state;
     const { onHide } = this.props;
 
     return (
@@ -81,6 +87,10 @@ class AddTaskModal extends React.PureComponent {
             onChange={this.handleChange}
             style={{ width: "70%", resize: "none" }}
           />
+          <DatePicker
+            selected={date}
+            onChange={date => this.handleSetDate(date)}
+          />
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={onHide} variant="secondary">
@@ -91,7 +101,7 @@ class AddTaskModal extends React.PureComponent {
             onClick={this.handleS}
             disabled={!!!title || !!!description}
           >
-            Add 
+            {this.props.editableTask ? "Save" : "Add"} 
           </Button>
         </Modal.Footer>
       </Modal>
@@ -99,10 +109,10 @@ class AddTaskModal extends React.PureComponent {
   }
 }
 
-AddTaskModal.propTypes = {
+TaskActions.propTypes = {
   editableTask: PropTypes.object,
   onHide: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
 };
 
-export default AddTaskModal;
+export default TaskActions;

@@ -4,7 +4,7 @@ import styles from "./task.module.css";
 import { Card, Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faEdit } from "@fortawesome/free-solid-svg-icons";
-
+import dateFormatter from '../../helpers/date';
 import PropTypes from 'prop-types';
 
 const Task = ({
@@ -26,9 +26,9 @@ const Task = ({
           />
         </div>
         <Card.Title>{task.title}</Card.Title>
-        <Card.Text>
-          Description: {task.description}
-        </Card.Text>
+        <Card.Text>Description: {task.description}</Card.Text>
+        <Card.Text>Date: {dateFormatter(task.date)}</Card.Text>
+        <Card.Text>Created_At: {dateFormatter(task.created_at)}</Card.Text>
         <div>
           <Button
             disabled={disabled}
