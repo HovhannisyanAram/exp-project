@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faEdit } from "@fortawesome/free-solid-svg-icons";
 import dateFormatter from '../../helpers/date';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
 const Task = ({
   task,
@@ -25,7 +26,11 @@ const Task = ({
             checked={checked}
           />
         </div>
-        <Card.Title>{task.title}</Card.Title>
+        <Card.Title>
+          <Link to={`/task/${task._id}`}>
+            {task.title}
+          </Link>
+        </Card.Title>
         <Card.Text>Description: {task.description}</Card.Text>
         <Card.Text>Date: {dateFormatter(task.date)}</Card.Text>
         <Card.Text>Created_At: {dateFormatter(task.created_at)}</Card.Text>
