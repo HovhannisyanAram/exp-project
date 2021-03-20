@@ -1,21 +1,22 @@
 import React, { memo } from "react";
 
+import PropTypes from 'prop-types';
 import styles from "./task.module.css";
-import { Card, Button } from "react-bootstrap";
+import { Link } from 'react-router-dom';
+import { Card, Button } from 'react-bootstrap';
+import dateFormatter from '../../helpers/date';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash, faEdit } from "@fortawesome/free-solid-svg-icons";
-import dateFormatter from '../../helpers/date';
-import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
 
 const Task = ({
   task,
+  checked,
   disabled,
+  handleSetEditTask,
   handleDeleteOneTask,
   toggleSetRemoveTaskIds,
-  checked,
-  handleSetEditTask,
 }) => {
+  
   return (
     <Card className={`${styles.card} ${checked && styles.checked}`}>
       <Card.Body className="cardBody">

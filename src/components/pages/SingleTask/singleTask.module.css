@@ -1,16 +1,62 @@
 .singleTask {
   display: flex;
-  justify-content: center;
+  /* justify-content: center; */
+  flex-direction: column;
   align-items: center;
   height: 80vh;
+}
+
+.singleTaskDiv {
+  margin: 2% 0 5% 0;
 }
 
 .task {
   width: 50%;
   padding: 30px;
-  box-shadow: 15px 15px 40px black;
+  box-shadow: 15px 15px 40px rgb(0, 0, 0);
 }
 
 .date {
   font-style: italic;
+}
+
+.button {
+  display: flex;
+  justify-content: end;
+  border-radius: 15px;
+  background-color: rgb(0, 240, 255);
+  border: none;
+  color: #ffffff;
+  text-align: center;
+  font-size: 15px;
+  padding: 10px;
+  width: 100px;
+  transition: all 0.5s;
+  cursor: pointer;
+  margin: 5px;
+}
+
+.button span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+.button span:after {
+  content: '\00ab';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  left: 10px;
+  transition: 0.5s;
+}
+
+.button:hover span {
+  padding-left: 15px;
+}
+
+.button:hover span:after {
+  opacity: 1;
+  left: 0;
 }

@@ -8,18 +8,46 @@ import About from './components/pages/About';
 import NotFound from './components/NotFound';
 import Contact from './components/pages/Contact';
 import SingleTask from './components/pages/SingleTask';
-class App extends Component {
 
+const page = [
+  {
+    path: "/",
+    component: Todo
+  },
+  {
+    path: "/contact",
+    component: Contact
+  },
+  {
+    path: "/about",
+    component: About
+  },
+  {
+    path: "/task/:id",
+    component: SingleTask
+  },
+  {
+    path: "/404",
+    component: NotFound
+  }
+]
+class App extends Component {
   render() {
+    const pageRoutes = page.map((page, index) => {
+      return(
+        <Route
+          key={index}
+          path={page.path}
+          component={page.component}
+          exact
+        />
+      )
+    })
     return (
         <div className="App">
           <Navbar />
           <Switch>
-            <Route path="/" component={Todo} exact />
-            <Route path="/about" component={About} exact />
-            <Route path="/404" component={NotFound} exact />
-            <Route path="/contact" component={Contact} exact />
-            <Route path="/task/:id" component={SingleTask} exact />
+            {pageRoutes}
             <Redirect to="/404" />
           </Switch>
         </div>

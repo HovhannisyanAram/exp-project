@@ -1,9 +1,9 @@
 import React from "react";
-
-import { Form, Button, Modal } from "react-bootstrap";
-import DatePicker from 'react-datepicker';
 import PropTypes from "prop-types";
+import Preloader from "../Preloader";
+import DatePicker from 'react-datepicker';
 import dateFormatter from '../../helpers/date';
+import { Form, Button, Modal } from "react-bootstrap";
 
 class TaskActions extends React.PureComponent {
   constructor(props) {
@@ -53,6 +53,14 @@ class TaskActions extends React.PureComponent {
     const { title, description, date } = this.state;
     const { onHide } = this.props;
 
+    if(!TaskActions) {
+      return(
+        <div>
+          <Preloader />
+        </div>
+      )
+    };
+    
     return (
       <Modal
         show={true}

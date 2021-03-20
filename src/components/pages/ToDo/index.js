@@ -1,6 +1,7 @@
 import React from 'react';
 import Task from '../../Task';
 import Confirm from '../../Confirm'
+import Preloader from '../../Preloader';
 import TaskActions from '../../TaskActions';
 import dateFormatter from '../../../helpers/date';
 import { Container, Row, Col, Button } from 'react-bootstrap';
@@ -8,6 +9,7 @@ import { Container, Row, Col, Button } from 'react-bootstrap';
 class ToDo extends React.PureComponent {
   state = {
     tasks: [],
+    loading: false,
     editableTask: null,
     isAllChecked: false,
     isConfirmModal: false,
@@ -164,6 +166,9 @@ class ToDo extends React.PureComponent {
   };
 
   componentDidMount() {
+    this.setState({
+      loading: true
+    })
     fetch("http://localhost:3001/task")
     .then(res => res.json())
     .then(data => {
@@ -171,23 +176,32 @@ class ToDo extends React.PureComponent {
         throw data.error;
       };
       this.setState({
-        tasks: data
+        tasks: data,
       })
     })
     .catch(error => {
-      console.error("get Tasks request error", error)
-    });
-  }
+      console.error("get Tasks request error", error);
+    })
+    .finally(
+      this.setState({
+        loading: false
+      }),
+    );
+  };
 
   render() {
     const {
       tasks,
+      loading,
       removeTasks,
       isAllChecked,
       editableTask,
       isConfirmModal,
       isOpenAddTaskModal,
     } = this.state;
+
+    if(loading) return <Preloader />;
+
     const Tasks = this.state.tasks.map(task => {
     return (
       <Col
