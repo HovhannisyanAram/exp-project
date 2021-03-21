@@ -19,4 +19,12 @@ export function emailValid(email) {
     return undefined
   };
   return "Please type a valid email";
-}
+};
+
+export function isAllValid(formData) {
+  for (let key in formData) {
+    if (typeof formData[key] === "object" && !formData[key].valid)
+      return false;
+    };
+    return true;
+};
