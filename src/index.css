@@ -29,3 +29,7 @@ a:hover {
 a {
   color: rgb(56, 87, 87);
 }
+
+textarea {
+  resize: none;
+}
