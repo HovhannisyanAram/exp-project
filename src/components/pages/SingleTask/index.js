@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button } from 'react-bootstrap';
 import Preloader from '../../Preloader';
+import { Button } from 'react-bootstrap';
 import TaskActions from '../../TaskActions';
 import styles from './singleTask.module.css';
 import dateFormatter from '../../../helpers/date';
@@ -9,6 +9,7 @@ class SingleTask extends React.Component {
   state = {
     singleTask: null,
     isEditModal: false,
+    loading: false,
   };
 
   handleDeleteTask = (id) => {
@@ -34,6 +35,7 @@ class SingleTask extends React.Component {
   };
 
   handleEditTask = (formData) => {
+    this.setState({ loading: true });
     fetch("http://localhost:3001/task/" + formData._id, {
       method: "PUT",
       body: JSON.stringify(formData),
@@ -47,16 +49,21 @@ class SingleTask extends React.Component {
         throw data.error
       }
       this.setState({
-        singleTask: data
+        singleTask: data,
+        isEditModal: false,
       });
     })
     .catch(error => {
       console.error("Single task page, Edit task error", error)
     })
+    .finally(() => {
+      this.setState({ loading: false })
+    })
   };
 
   componentDidMount() { 
     const { id } = this.props.match.params;
+    this.setState({ loading: true })
     fetch(`http://localhost:3001/task/${id}`)
     .then(res => res.json())
     .then(data => {
@@ -68,20 +75,24 @@ class SingleTask extends React.Component {
       });
     })
     .catch(error => {
+      const { history } = this.props;
+      history.push("/404");
       console.error('Get single task request error', error);
     })
+    .finally(() => {
+      this.setState({ loading: false })
+    });
   };
 
   render() {
-    const { singleTask, isEditModal } = this.state;
-    if(!singleTask) {
-      return(
-        <div>
-          <Preloader />
-        </div>
-      )
-    };
+    const {
+      singleTask,
+      isEditModal,
+      loading,
+    } = this.state;
 
+    if(!singleTask) return <Preloader />;
+  
   return (
     <>
       <div className={styles.singleTask}>
@@ -133,6 +144,9 @@ class SingleTask extends React.Component {
           onHide={this.toggleEditModal}
           onSubmit={this.handleEditTask}
         />
+      }
+      {
+        loading && <Preloader />
       }
     </>
   )};

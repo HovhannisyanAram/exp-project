@@ -21,6 +21,7 @@ class ToDo extends React.PureComponent {
   handleSubmit = (formData) => {
     if (!formData.title || !formData.description) return;
     formData.date = dateFormatter(formData.date);
+    this.setState({ loading: true });
     const tasks = [...this.state.tasks];
     fetch("http://localhost:3001/task", {
       method: "POST",
@@ -35,16 +36,21 @@ class ToDo extends React.PureComponent {
         throw data.error;
       }
       tasks.push(data)
+      this.state.isOpenAddTaskModal && this.toggleOpenAddTaskModal();
       this.setState({
         tasks
       });
     })
     .catch(error => {
       console.log('error', error)
-    });
+    })
+    .finally(() => {
+      this.setState({ loading: false })
+    })
   };
 
   handleDeleteOneTask = (id) => {
+    this.setState({ loading: true });
     fetch(`http://localhost:3001/task/` + id, {
       method: "DELETE",
     })
@@ -61,7 +67,10 @@ class ToDo extends React.PureComponent {
     })
     .catch(error => {
       console.error("Delete task request Error", error);
-    });
+    })
+    .finally(() => {
+      this.setState({ loading: false })
+    })
   };
 
   toggleSetRemoveTaskIds = (_id) => {
@@ -78,6 +87,7 @@ class ToDo extends React.PureComponent {
   };
 
   removeSelectedTasks = () => {
+    this.setState({ loading: true });
     fetch("http://localhost:3001/task", {
       method: "PATCH",
       body: JSON.stringify({ tasks: Array.from(this.state.removeTasks) }),
@@ -98,7 +108,13 @@ class ToDo extends React.PureComponent {
         removedTasks: new Set(),
         isAllChecked: false,
       })
-    });
+    })
+    .catch(error => {
+      console.error("Delete any task request error", error)
+    })
+    .finally(() => {
+      this.setState({ loading: false })
+    })
   };
 
   handleToggleCheckAll = () => {
@@ -135,6 +151,7 @@ class ToDo extends React.PureComponent {
   };
 
   handleEditTask = (editTask) => {
+    this.setState({ loading: true });
     fetch('http://localhost:3001/task/' + editTask._id, {
       method: "PUT",
       body: JSON.stringify(editTask),
@@ -150,13 +167,17 @@ class ToDo extends React.PureComponent {
       const tasks = [...this.state.tasks];
       const idx = tasks.findIndex(task => task._id === data._id);
       tasks[idx] = data;
+      this.state.editableTask && this.handleSetEditTask();
       this.setState({
         tasks
       });
     })
     .catch(error => {
       console.error("Edit task request error", error);
-    });
+    })
+    .finally(() => {
+      this.setState({ loading: false })
+    })
   };
 
   toggleOpenAddTaskModal = () => {
@@ -199,8 +220,6 @@ class ToDo extends React.PureComponent {
       isConfirmModal,
       isOpenAddTaskModal,
     } = this.state;
-
-    if(loading) return <Preloader />;
 
     const Tasks = this.state.tasks.map(task => {
     return (
@@ -279,6 +298,9 @@ class ToDo extends React.PureComponent {
             onHide={this.toggleOpenAddTaskModal}
             onSubmit={this.handleSubmit}
           />
+        }
+        {
+          loading && <Preloader />
         }
       </>
     )

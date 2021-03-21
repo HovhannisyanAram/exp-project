@@ -1,6 +1,5 @@
 import React from "react";
 import PropTypes from "prop-types";
-import Preloader from "../Preloader";
 import DatePicker from 'react-datepicker';
 import dateFormatter from '../../helpers/date';
 import { Form, Button, Modal } from "react-bootstrap";
@@ -27,16 +26,16 @@ class TaskActions extends React.PureComponent {
 
   handleS = ({ key, type }) => {
     const { title, description } = this.state;
-    const { onHide, onSubmit } = this.props;
+    const { onSubmit } = this.props;
     if (
       (type === "keypress" && key !== "Enter")
         ||
       (!title || !description)
     ) return;
     const formData = {...this.state};
-    formData.date = dateFormatter(formData.date)
+    formData.date = dateFormatter(formData.date);
     onSubmit(formData); 
-    onHide();
+    // onHide();
   };
 
   handleSetDate = (date) => {
@@ -52,14 +51,6 @@ class TaskActions extends React.PureComponent {
   render() {
     const { title, description, date } = this.state;
     const { onHide } = this.props;
-
-    if(!TaskActions) {
-      return(
-        <div>
-          <Preloader />
-        </div>
-      )
-    };
     
     return (
       <Modal
