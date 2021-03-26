@@ -8,6 +8,7 @@ import {
   isRequired,
   emailValid,
   isAllValid, } from "../../helpers/validators"; 
+  
 const inputsInfo = [
   {
     name: "name",
@@ -52,7 +53,7 @@ class ContactForm extends React.Component {
         error: null,
       },
       errorMessage: "",
-      isValid: false,
+      // isValid: false,
     };
   };
 
@@ -116,6 +117,8 @@ class ContactForm extends React.Component {
   };
 
   render() {
+    const {name, email, message, errorMessage} = this.state;
+    const isValid = name.valid && email.valid && message.valid;
     const inputs = inputsInfo.map((input, index) => {
       return(
         <Form.Group
@@ -143,14 +146,14 @@ class ContactForm extends React.Component {
       <Container className={styles.container}>
         <Form onSubmit={(e) => e.preventDefault()}>
           <p style={{color: "red"}}>
-            {this.state.errorMessage}
+            {errorMessage}
           </p>
           {inputs}
           <Button
             variant="primary"
             type="submit"
             onClick={this.handleSubmit}
-            disabled={!this.state.isValid}
+            disabled={!isValid}
           >
             Submit
           </Button>
