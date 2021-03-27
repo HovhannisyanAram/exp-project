@@ -1,172 +1,88 @@
-import React, { useState } from "react";
-import styles from "../ContactForm/contactForm.module.css";
+import React, { useRef, useContext, useEffect } from "react";
 import { withRouter } from "react-router-dom";
-import { Form, Button, Container } from "react-bootstrap";
-import {
-  maxLength,
-  minLength,
-  isRequired,
-  emailValid, } from "../../helpers/validators"; 
+import { Form, Button } from "react-bootstrap";
+import styles from "../ContactForm/contactForm.module.css";
+
+import { ContactContext } from "../../context/ContactPageContext";
 
 const inputsInfo = [
   {
     name: "name",
-    controlId: "formBasicName",
-    label: "Name",
     type: "text",
+    label: "Name",
+    controlId: "formBasicName",
   },
   {
     name: "email",
-    controlId: "formBasicEmail",
-    label: "Email",
     type: "email",
+    label: "Email",
+    controlId: "formBasicEmail",
   },
   {
-    name: "message",
-    controlId: "textareaFormContactPage",
-    label: "Message area",
-    as: "textarea",
     rows: 3,
+    as: "textarea",
     maxLength: 100,
-  }
-]
-
-const ContactFormWithHooks = ({
-  history,
-  ...props
-}) => {
-  const [formData, setFormData] = useState({
-    name: {
-        value: "",
-        valid: false,
-        error: null
-    },
-    email: {
-        value: "",
-        valid: false,
-        error: null
-    },
-    message: {
-        value: "",
-        valid: false,
-        error: null
-    },
-});
-
-  const [errorMessage, setErrorMessage] = useState("");
-
-  const handleSubmit = () => {
-    const contactFormData = { ...formData };
-
-    const isValid = contactFormData.name.valid && 
-      contactFormData.email.valid && 
-      contactFormData.message.valid;
-    
-    let error = "";
-
-    if(!contactFormData.name.valid) {
-      error = !contactFormData.name.valid ? "Field is Required" : contactFormData.name.error;
-    } else if (!contactFormData.email.valid) {
-      error = !contactFormData.email.valid ? "Field is Required" : contactFormData.email.error;
-    } else if (!contactFormData.message.valid) {
-      error = !contactFormData.message.valid ? "Field is Required" : contactFormData.email.error;
-    };
-
-    setErrorMessage(error);
-    if (!isValid) return;
-
-    for (let key in contactFormData) {
-      contactFormData[key] = contactFormData[key].value;
-    };
-
-    (async () => {
-      try {
-        const response = await fetch("http://localhost:3001/form", {
-          method: "POST",
-          body: JSON.stringify(formData),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-      const data = await response.json();
-      if(data.error) throw data.error;
-      history.push("/");
-      } catch(error) {
-        setErrorMessage(error.message)
-        console.error("Submit contact form request error", error)
-      };
-    })();
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    let error = null;
-    
-    const maxLength25 = maxLength(25);
-    const minLength2 = minLength(2);
-
-    switch (name) {
-      case "name":
-      case "email":
-      case "message":
-        error = isRequired(value) ||
-        (name === "email" && emailValid(value)) ||
-        minLength2(value) ||
-        maxLength25(value);
-        break;
-        default:;
-    };
-    setFormData({
-      ...formData,
-      [name]: {
-        value,
-        valid: !!!error,
-        error,
-      },
-    });
-  };
+    name: "message",
+    label: "Message",
+    controlId: "textareaForContactPage",
+  },
+];
+const ContactForm = () => {
+  const nameInputRef = useRef(null);
+  const context = useContext(ContactContext);
+  useEffect(() => {
+    nameInputRef.current.focus();
+  }, [])
+  const {
+    formData,
+    errorMessage,
+    handleChange,
+    handleSubmit, } = context;
+  const { name, email, message } = formData;
+  const isValid = name.valid && email.valid && message.valid;
 
   const inputs = inputsInfo.map((input, index) => {
     return(
       <Form.Group
-        key={index}
         controlId={input.controlId}
         className={styles.formGroup}
+        key={index}
       >
         <Form.Label>{input.label}</Form.Label>
         <Form.Control
-          as={input.as}
+          ref={!!!index ? nameInputRef : null}
           name={input.name}
           type={input.type}
-          rows={input.rows}
           placeholder={input.label}
-          maxLength={input.maxLength}
+          as={input.as}
+          rows={input.rows}
+          value={formData[input.name].value}
           onChange={handleChange}
-          value={[input.name].value}
         />
-        <Form.Text style={{color: "red"}}>{[input.name].error}</Form.Text>
+        <Form.Text style={{ color: "red" }}>
+          {formData[input.name].error}
+        </Form.Text>
       </Form.Group>
-    )
-  });
-    return (
-      <Container className={styles.container}>
-        <Form onSubmit={(e) => e.preventDefault()}>
-          <p style={{color: "red"}}>
-            {errorMessage}
-          </p>
-          {inputs}
-          <Button
-            variant="primary"
-            type="submit"
-            onClick={handleSubmit}
-            disabled={!handleSubmit.isValid}
-          >
-            Submit
-          </Button>
-        </Form>
-      </Container>
     );
+  });
+  return(
+    <div style={{ width: "40%", margin: "0 auto" }}>
+      <Form onSubmit={(e) => e.preventDefault()}>
+        <p style={{ color: "#fb3838", textTransform: "uppercase" }}>
+          {errorMessage}
+        </p>
+        {inputs}
+        <Button
+          variant="primary"
+          type="submit"
+          onClick={handleSubmit}
+          disabled={!isValid}
+        >
+          Submit
+        </Button>
+      </Form>
+    </div>
+  );
 };
 
-
-export default withRouter(ContactFormWithHooks);
+export default withRouter(ContactForm);

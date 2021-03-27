@@ -8,6 +8,7 @@ import About from './components/pages/About';
 import NotFound from './components/NotFound';
 import Contact from './components/pages/Contact';
 import SingleTask from './components/pages/SingleTask';
+import ContactContextProvider from './context/ContactPageContext';
 
 const page = [
   {
@@ -34,6 +35,22 @@ const page = [
 class App extends Component {
   render() {
     const pageRoutes = page.map((page, index) => {
+      if(page.path === "/contact") {
+        return(
+        <Route
+          key={index}
+          path={page.path}
+          exact
+          render={(props) => {
+            return(
+              <ContactContextProvider>
+                {<page.component {...props} />}
+              </ContactContextProvider>
+            );
+          }}
+        />
+        );
+      };
       return(
         <Route
           key={index}

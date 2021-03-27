@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import Preloader from '../../Preloader';
 import { Button } from 'react-bootstrap';
 import TaskActions from '../../TaskActions';
@@ -148,10 +147,6 @@ class SingleTask extends React.Component {
       }
     </>
   )};
-};
-
-SingleTask.propTypes = {
-  handleDeleteTask: PropTypes.func.isRequired,
 };
 
 export default SingleTask;
