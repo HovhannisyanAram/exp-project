@@ -1,64 +1,9 @@
-import React, { useReducer, useEffect } from 'react';
+import React, { useReducer, useEffect, useCallback } from 'react';
 import Preloader from '../../Preloader';
 import { Button } from 'react-bootstrap';
 import TaskActions from '../../TaskActions';
 import styles from './singleTask.module.css';
 import dateFormatter from '../../../helpers/date';
-// class SingleTask extends React.Component {
-//   
-
-//   handleDeleteTask = (id) => {
-//     fetch(`http://localhost:3001/task/${id}`, {
-//       method: "DELETE"
-//     })
-//     .then(res => res.json())
-//     .then(data => {
-//       if(data.error) {
-//         throw data.error
-//       };
-//       this.props.history.push('/');
-//     })
-//     .catch(error => {
-//       console.error('Get single task request error', error);
-//     })
-//   };
-
-//   
-
-//   handleEditTask = (formData) => {
-//     this.setState({ loading: true });
-//     fetch("http://localhost:3001/task/" + formData._id, {
-//       method: "PUT",
-//       body: JSON.stringify(formData),
-//       headers: {
-//         "Content-Type": "application/json"
-//       },
-//     })
-//     .then(res => res.json())
-//     .then(data => {
-//       if(data.error) {
-//         throw data.error
-//       }
-//       this.setState({
-//         singleTask: data,
-//         isEditModal: false,
-//       });
-//     })
-//     .catch(error => {
-//       console.error("Single task page, Edit task error", error)
-//     })
-//     .finally(() => {
-//       this.setState({ loading: false })
-//     })
-//   };
-
-//   componentDidMount() { 
-//     
-//   };
-
-//   render() {
-  //   )};
-  // };
 
   const initialState = {
     singleTask: null,
@@ -92,8 +37,9 @@ import dateFormatter from '../../../helpers/date';
     // Reducer
     const [state, dispatch] = useReducer(reducer, initialState);
     // Effects
+    const { id } = props.match.params;
+    const { history } = props;
     useEffect(() => {
-      const { id } = props.match.params;
       dispatch({ type: "toggleLoading", loading: true });
       fetch(`http://localhost:3001/task/${id}`)
         .then((res) => res.json())
@@ -105,11 +51,10 @@ import dateFormatter from '../../../helpers/date';
           dispatch({ type: "toggleLoading", loading: false });
         })
         .catch((error) => {
-          const { history } = this.props;
           history.push("/404");
           console.error("Get single task request error", error);
         });
-    },[]);
+    },[id, history]);
 
     useEffect(() => {
       
@@ -121,6 +66,54 @@ import dateFormatter from '../../../helpers/date';
       isEditModal,
       loading,
     } = state;
+
+    const handleEditTask = useCallback((formData) => {
+      dispatch({ type: "toggleLoading", loading: true });
+      fetch("http://localhost:3001/task/" + formData._id, {
+        method: "PUT",
+        body: JSON.stringify(formData),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) {
+            throw data.error;
+          };
+          dispatch({ type: "setSingleTask", data: data });
+          dispatch({ type: "toggleEditModal" });
+        })
+        .catch((error) => {
+          console.error("Single task page, Edit task error", error);
+        })
+        .finally(() => {
+          dispatch({ type: "toggleLoading", loading: false });
+        });
+    },[]);
+
+    const handleDeleteTask = useCallback((id) => {
+      dispatch({ type: "toggleLoading", loading: true });
+      fetch(`http://localhost:3001/task/${id}`, {
+        method: "DELETE"
+      })
+      .then(res => res.json())
+      .then(data => {
+        if(data.error) {
+          throw data.error
+        };
+        props.history.push('/');
+      })
+      .catch(error => {
+        dispatch({ type: "toggleLoading", loading: false });
+        console.error('Get single task request error', error);
+      })
+    }, [props.history]);
+
+    
+    useEffect(() => {
+
+    },[])
     
     if(!singleTask) return <Preloader />;
       
@@ -130,7 +123,7 @@ import dateFormatter from '../../../helpers/date';
           <div className={styles.singleTaskDiv}>
             <button
               className={styles.button}
-              onClick={() => this.props.history.goBack()}
+              onClick={() => props.history.goBack()}
             >
               <span>
                 Go Back
@@ -154,7 +147,7 @@ import dateFormatter from '../../../helpers/date';
               <Button
                 style={{backgroundColor: "#ff0018", border: 0}}
                 variant="info"
-                onClick={() => this.handleDeleteTask(singleTask._id)}
+                onClick={() => handleDeleteTask(singleTask._id)}
               >
                 Delete
               </Button>
@@ -162,7 +155,7 @@ import dateFormatter from '../../../helpers/date';
                 style={{backgroundColor: "rgb(0 240 255)", border: 0}}
                 className="ml-2"
                 variant="warning"
-                onClick={() => { dispatch({ type: "toggleEditModal" }) }}
+                onClick={() => dispatch({ type: "toggleEditModal" }) }
               >
                 Edit
               </Button>
@@ -172,8 +165,8 @@ import dateFormatter from '../../../helpers/date';
         {
           isEditModal && <TaskActions
             editableTask={singleTask}
-            onHide={() => { dispatch({ type: "toggleEditModal" }) }}
-            onSubmit={this.handleEditTask}
+            onHide={() => dispatch({ type: "toggleEditModal" }) }
+            onSubmit={handleEditTask}
           />
         }
         {

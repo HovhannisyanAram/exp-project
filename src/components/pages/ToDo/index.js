@@ -19,7 +19,7 @@ class ToDo extends React.PureComponent {
   
   
   handleSubmit = (formData) => {
-    if (!formData.title || !formData.description) return;
+    if (!!!formData.title.trim() || !!!formData.description.trim()) return;
     formData.date = dateFormatter(formData.date);
     this.setState({ loading: true });
     const tasks = [...this.state.tasks];
@@ -167,7 +167,7 @@ class ToDo extends React.PureComponent {
       const tasks = [...this.state.tasks];
       const idx = tasks.findIndex(task => task._id === data._id);
       tasks[idx] = data;
-      this.state.editableTask && this.handleSetEditTask();
+      this.state.editableTask && this.editableTaskNull();
       this.setState({
         tasks
       });

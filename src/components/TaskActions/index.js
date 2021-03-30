@@ -27,7 +27,7 @@ class TaskActions extends React.PureComponent {
 
   handleS = ({ key, type }) => {
     const { title, description } = this.state;
-    const { onHide, onSubmit } = this.props;
+    const { onSubmit } = this.props;
     if (
       (type === "keypress" && key !== "Enter")
         ||
@@ -36,7 +36,6 @@ class TaskActions extends React.PureComponent {
     const formData = {...this.state};
     formData.date = dateFormatter(formData.date)
     onSubmit(formData); 
-    onHide();
   };
 
   handleSetDate = (date) => {
