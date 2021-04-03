@@ -10,6 +10,8 @@ import Contact from './components/pages/Contact';
 import SingleTask from './components/pages/SingleTask';
 import ContactContextProvider from './context/ContactPageContext';
 
+import ReduxDemo from '../src/demo/Redux'
+
 const page = [
   {
     path: "/",
@@ -62,11 +64,12 @@ class App extends Component {
     })
     return (
         <div className="App">
-          <Navbar />
+          {/* <Navbar />
           <Switch>
             {pageRoutes}
             <Redirect to="/404" />
-          </Switch>
+          </Switch> */}
+          <ReduxDemo />
         </div>
     );
   };
