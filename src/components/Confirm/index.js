@@ -3,10 +3,6 @@ import {Modal, Button} from 'react-bootstrap';
 const Confirm = (props) => {
   
   const {onHide, onSubmit, message} = props;
-  const handleSubmit = () => {
-    onSubmit();
-    onHide();
-  }
 
   return(
     <Modal show={true} onHide={onHide}>
@@ -17,7 +13,7 @@ const Confirm = (props) => {
           <Button variant="secondary" onClick={onHide}>
             Cancel
           </Button>
-          <Button variant="danger" onClick={handleSubmit}>
+          <Button variant="danger" onClick={onSubmit}>
             Confirm
           </Button>
         </Modal.Footer>

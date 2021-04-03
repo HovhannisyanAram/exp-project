@@ -10,66 +10,54 @@ import Contact from './components/pages/Contact';
 import SingleTask from './components/pages/SingleTask';
 import ContactContextProvider from './context/ContactPageContext';
 
-import ReduxDemo from '../src/demo/Redux'
-
 const page = [
   {
     path: "/",
-    component: Todo
+    Component: Todo
   },
   {
     path: "/contact",
-    component: Contact
+    Component: Contact,
+    Provider: ContactContextProvider
   },
   {
     path: "/about",
-    component: About
+    Component: About
   },
   {
     path: "/task/:id",
-    component: SingleTask
+    Component: SingleTask
   },
   {
     path: "/404",
-    component: NotFound
+    Component: NotFound
   }
 ]
 class App extends Component {
   render() {
     const pageRoutes = page.map((page, index) => {
-      if(page.path === "/contact") {
-        return(
-        <Route
-          key={index}
-          path={page.path}
-          exact
-          render={(props) => {
-            return(
-              <ContactContextProvider>
-                {<page.component {...props} />}
-              </ContactContextProvider>
-            );
-          }}
-        />
-        );
-      };
+      const { Provider, Component } = page
       return(
         <Route
-          key={index}
-          path={page.path}
-          component={page.component}
+        key={index}
+        path={page.path}
+        render={(props) => {
+          return(
+            Provider ? <Provider>
+            <Component {...props} />
+            </Provider> : <Component {...props} />)
+        }}
           exact
         />
-      )
+        );
     })
     return (
         <div className="App">
-          {/* <Navbar />
+          <Navbar />
           <Switch>
             {pageRoutes}
             <Redirect to="/404" />
-          </Switch> */}
-          <ReduxDemo />
+          </Switch>
         </div>
     );
   };

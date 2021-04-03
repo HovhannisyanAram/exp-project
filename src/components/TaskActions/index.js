@@ -100,7 +100,7 @@ class TaskActions extends React.PureComponent {
           />
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={onHide} variant="secondary">
+          <Button onClick={() => onHide()} variant="secondary">
             Close
           </Button>
           <Button
