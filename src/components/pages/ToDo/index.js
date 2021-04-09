@@ -1,76 +1,117 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+
 import Task from '../../Task';
-import Confirm from '../../Confirm'
+import Search from '../../Search';
+import Confirm from '../../Confirm';
 import { connect } from 'react-redux';
 import Preloader from '../../Preloader';
 import TaskActions from '../../TaskActions';
+import 'react-toastify/dist/ReactToastify.css';
 import dateFormatter from '../../../helpers/date';
 import actionTypes from '../../../redux/actionTypes';
+import { ToastContainer, toast } from 'react-toastify';
 import { Container, Row, Col, Button } from 'react-bootstrap';
 import { 
-  setTasksThunk, 
+  setTasksThunk,
   addTasksThunk, 
-  deleteOneTaskThunk, 
   editTaskThunk,
+  deleteOneTaskThunk, 
   removeAnyTaskThunk,
+  toggleActiveStatusThunk
 } from '../../../redux/actions';
-class ToDo extends React.PureComponent {
+
+
+
+
+const Todo = (props) => {
+  const {
+    // state
+    tasks,
+    loading,
+    removeTasks,
+    isAllChecked,
+    errorMessage,
+    editableTask,
+    isConfirmModal,
+    successMessage,
+    isOpenAddTaskModal,
+    // functions
+    setTasks,
+    editTask,
+    removeAnyTask,
+    deleteOneTask,
+    toggleCheckTask,
+    toggleActiveTask,
+    toggleCheckAllTasks,
+    toggleOpenAddTaskModal,
+    toggleOpenConfirmModal,
+    setOrRemoveEditableTask
+  } = props;
   
-  handleSubmit = (formData) => {
+  const  handleSubmit = (formData) => {
     if (!!!formData.title.trim() || !!!formData.description.trim()) return;
     formData.date = dateFormatter(formData.date);
-    this.props.addTask(formData);
+    props.addTask(formData);
   };
 
-  componentDidMount() {
-    this.props.setTasks();
-  };
+  useEffect(() => {
+    setTasks()
+  }, [setTasks]);
 
-  render() {
-    const {
-      // state
-      tasks,
-      loading,
-      removeTasks,
-      isAllChecked,
-      editableTask,
-      isConfirmModal,
-      isOpenAddTaskModal,
-      // functions
-      editTask,
-      removeAnyTask,
-      deleteOneTask,
-      toggleCheckTask,
-      toggleCheckAllTasks,
-      toggleOpenAddTaskModal,
-      toggleOpenConfirmModal,
-      setOrRemoveEditableTask,
-    } = this.props;
+   useEffect(() => {
+     errorMessage && toast.error(`🦄 ${errorMessage}`, {
+     position: "bottom-center",
+     autoClose: 5000,
+     hideProgressBar: false,
+     closeOnClick: true,
+     pauseOnHover: true,
+     draggable: true,
+     progress: undefined,
+     });
+  }, [errorMessage]);
 
-    const Tasks = tasks.map(task => {
-    return (
-      <Col
-        md={6}
-        xl={4}
-        xs={12}
-        key={task._id}
-        className="d-flex justify-content-center mt-4"
-      >
-        <Task
-          task={task}
-          disabled={!!removeTasks.size}
-          checked={removeTasks.has(task._id)}
-          handleSetEditTask={setOrRemoveEditableTask}
-          handleDeleteOneTask={deleteOneTask}
-          toggleSetRemoveTaskIds={toggleCheckTask}
-        />
-      </Col>
-    )
-  })
+  useEffect(() => {
+    successMessage && toast.success(`🦄 ${successMessage}`, {
+      position: "bottom-center",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      });
+  }, [successMessage])
+
+  const Tasks = tasks.map(task => {
+  return (
+    <Col
+      md={6}
+      xl={4}
+      xs={12}
+      key={task._id}
+      className="d-flex justify-content-center mt-4"
+    >
+      <Task
+        task={task}
+        disabled={!!removeTasks.size}
+        checked={removeTasks.has(task._id)}
+        handleDeleteOneTask={deleteOneTask}
+        toggleActiveTask={toggleActiveTask}
+        toggleSetRemoveTaskIds={toggleCheckTask}
+        handleSetEditTask={setOrRemoveEditableTask}
+      />
+    </Col>
+  )
+  });
 
     return (
       <>
         <Container>
+          <Row>
+            <Col>
+              <Search />
+            </Col>
+          </Row>
           <Row className="mt-4">
             <Col>
               <Button
@@ -108,7 +149,7 @@ class ToDo extends React.PureComponent {
         {
           isConfirmModal && <Confirm
             onHide={toggleOpenConfirmModal}
-            onSubmit={removeAnyTask}
+            onSubmit={() => removeAnyTask(removeTasks)}
             message={`Do you want to delete ${removeTasks.size} task?`}
           />
         }
@@ -122,16 +163,18 @@ class ToDo extends React.PureComponent {
         {
           isOpenAddTaskModal && <TaskActions
             onHide={toggleOpenAddTaskModal}
-            onSubmit={this.handleSubmit}
+            onSubmit={handleSubmit}
           />
         }
         {
           loading && <Preloader />
         }
+        {
+          <ToastContainer />
+        }
       </>
-    )
-  }
-};
+  );
+}
 
 const mapStateToProps = (state) => {
   const {
@@ -140,17 +183,21 @@ const mapStateToProps = (state) => {
     removeTasks,
     isAllChecked,
     editableTask,
+    errorMessage,
+    successMessage,
     isConfirmModal,
     isOpenAddTaskModal,
     toggleOpenAddTaskModal
-  } = state.todoState;
+  } = state;
   return {
     tasks,
     loading,
     removeTasks,
     isAllChecked,
     editableTask,
+    errorMessage,
     isConfirmModal,
+    successMessage,
     isOpenAddTaskModal,
     toggleOpenAddTaskModal
   }
@@ -158,33 +205,22 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    // Thunks
     setTasks: () => dispatch(setTasksThunk()),
     addTask: (formData) => dispatch(addTasksThunk(formData)),
     deleteOneTask: (_id) => dispatch(deleteOneTaskThunk(_id)),
     editTask: (editTask) => dispatch(editTaskThunk(editTask)),
-    removeAnyTask: () => dispatch(removeAnyTaskThunk()),
-
-    toggleLoading: (isLoading) => {
-      dispatch({ type: actionTypes.TOGGLE_LOADING, isLoading })
-    },
-    toggleCheckTask: (_id) => {
-      dispatch({ type: actionTypes.TOGGLE_CHECK_TASK, _id })
-    },
-    toggleCheckAllTasks: () => {
-      dispatch({ type: actionTypes.TOGGLE_CHECK_ALL_TASKS })
-    },
-    toggleOpenAddTaskModal: () => {
-      dispatch({ type: actionTypes.TOGGLE_OPEN_ADD_TASK_MODAL })      
-    },
-    toggleOpenConfirmModal: () => {
-      dispatch({ type: actionTypes.TOGGLE_OPEN_CONFIRM_MODAL })      
-    },
-    setOrRemoveEditableTask: (task = null) => {
-      dispatch({ type: actionTypes.SET_OR_REMOVE_EDITABLE_TASK, task })
-    },
+    toggleActiveTask: (task) => dispatch(toggleActiveStatusThunk(task)),
+    removeAnyTask: (removeTasks) => dispatch(removeAnyTaskThunk(removeTasks)),
+    // Actions
+    toggleCheckTask: (_id) => {dispatch({ type: actionTypes.TOGGLE_CHECK_TASK, _id })},
+    toggleCheckAllTasks: () => {dispatch({ type: actionTypes.TOGGLE_CHECK_ALL_TASKS })},
+    toggleOpenConfirmModal: () => {dispatch({ type: actionTypes.TOGGLE_OPEN_CONFIRM_MODAL })},
+    toggleOpenAddTaskModal: () => {dispatch({ type: actionTypes.TOGGLE_OPEN_ADD_TASK_MODAL })},
+    setOrRemoveEditableTask: (task = null) => {dispatch({ type: actionTypes.SET_OR_REMOVE_EDITABLE_TASK, task })},
   }
 };
 
-const TodoProvider = connect(mapStateToProps, mapDispatchToProps)(ToDo)
+const TodoProvider = connect(mapStateToProps, mapDispatchToProps)(Todo);
 
 export default TodoProvider;

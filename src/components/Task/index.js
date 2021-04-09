@@ -6,12 +6,13 @@ import { Link } from 'react-router-dom';
 import { Card, Button } from 'react-bootstrap';
 import dateFormatter from '../../helpers/date';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash, faEdit } from "@fortawesome/free-solid-svg-icons";
+import { faTrash, faEdit, faCheckSquare, faHourglassHalf } from "@fortawesome/free-solid-svg-icons";
 
 const Task = ({
   task,
   checked,
   disabled,
+  toggleActiveTask,
   handleSetEditTask,
   handleDeleteOneTask,
   toggleSetRemoveTaskIds,
@@ -37,19 +38,27 @@ const Task = ({
         <Card.Text>Created_At: {dateFormatter(task.created_at)}</Card.Text>
         <div>
           <Button
-            disabled={disabled}
             variant="danger"
+            disabled={disabled}
             onClick={() => handleDeleteOneTask(task._id)}
           >
             <FontAwesomeIcon icon={faTrash} />
           </Button>
           <Button
-            disabled={disabled}
-            variant="warning"
             className="ml-3"
+            variant="warning"
+            disabled={disabled}
             onClick={() => handleSetEditTask(task)}
           >
             <FontAwesomeIcon icon={faEdit} />
+          </Button>
+          <Button
+            className="ml-3"
+            variant="success"
+            disabled={disabled}
+            onClick={() => toggleActiveTask(task)}
+          >
+            <FontAwesomeIcon icon={task.status === "active" ? faHourglassHalf : faCheckSquare} />
           </Button>
         </div>
       </Card.Body>
@@ -63,11 +72,12 @@ Task.propTypes = {
     title: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
   }),
-  disabled: PropTypes.bool.isRequired,
-  handleDeleteOneTask: PropTypes.func.isRequired,
-  toggleSetRemoveTaskIds: PropTypes.func.isRequired,
   checked: PropTypes.bool.isRequired,
+  disabled: PropTypes.bool.isRequired,
+  toggleActiveTask: PropTypes.func.isRequired,
   handleSetEditTask: PropTypes.func.isRequired,
+  handleDeleteOneTask: PropTypes.func.isRequired,
+  toggleSetRemoveTaskIds: PropTypes.func.isRequired
 };
 
 export default memo(Task);

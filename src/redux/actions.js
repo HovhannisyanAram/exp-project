@@ -11,7 +11,7 @@ export const setTasksThunk = () => (dispatch) => {
     dispatch({ type: actionTypes.SET_TASKS, data })
   })
   .catch(error => {
-    console.error("get Tasks request error", error);
+    dispatch({ type: actionTypes.SET_ERROR_MESSAGE, errorMessage: error.message });
   })
   .finally(
       dispatch({ type: actionTypes.TOGGLE_LOADING, isLoading: false })
@@ -35,7 +35,7 @@ export const addTasksThunk = (formData) => (dispatch) => {
       dispatch({ type: actionTypes.ADD_TASK, data })
     })
     .catch(error => {
-      console.log('error', error)
+      dispatch({ type: actionTypes.SET_ERROR_MESSAGE, errorMessage: error.message });
     })
     .finally(() => {
       dispatch({ type: actionTypes.TOGGLE_LOADING, isLoading: false })
@@ -55,7 +55,7 @@ export const deleteOneTaskThunk = (_id) => (dispatch) => {
     dispatch({ type: actionTypes.DELETE_ONE_TASK, _id })
   })
   .catch(error => {
-    console.error("Delete task request Error", error);
+    dispatch({ type: actionTypes.SET_ERROR_MESSAGE, errorMessage: error.message });
   })
   .finally(() => {
     dispatch({ type: actionTypes.TOGGLE_LOADING, isLoading: false })
@@ -79,7 +79,7 @@ export const editTaskThunk = (editTask) => (dispatch) => {
       dispatch({ type: actionTypes.EDIT_TASK, data })
     })
     .catch(error => {
-      console.error("Edit task request error", error);
+      dispatch({ type: actionTypes.SET_ERROR_MESSAGE, errorMessage: error.message });
     })
     .finally(() => {
       dispatch({ type: actionTypes.TOGGLE_LOADING, isLoading: false })
@@ -103,9 +103,32 @@ export const removeAnyTaskThunk = (removeTasks) => (dispatch) => {
       dispatch({ type: actionTypes.DELETE_CHECKED_TASKS })
     })
     .catch(error => {
-      console.error("Delete any task request error", error)
+      dispatch({ type: actionTypes.SET_ERROR_MESSAGE, errorMessage: error.message });
     })
     .finally(() => {
       dispatch({ type: actionTypes.TOGGLE_LOADING, isLoading: false })
     })
 };
+
+export const toggleActiveStatusThunk = (task) => (dispatch) => {
+  const status = task.status === "active" ? "done" : "active";
+  dispatch({ type: actionTypes.TOGGLE_LOADING, isLoading: true });
+  fetch(`http://localhost:3001/task/${task._id}`, {
+    method: "PUT",
+    body: JSON.stringify({ status }),
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })
+  .then(res => res.json())
+  .then(data => {
+    if(data.error) throw data.error;
+    dispatch({ type: actionTypes.TOGGLE_ACTIVE_TASK, task: data  })
+  })
+  .catch(error => {
+    dispatch({ type: actionTypes.SET_ERROR_MESSAGE, errorMessage: error.message });
+  })
+  .finally(() => {
+    dispatch({ type: actionTypes.TOGGLE_LOADING, isLoading: false })
+  })
+}

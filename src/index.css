@@ -33,3 +33,7 @@ a {
 textarea {
   resize: none;
 }
+
+.react-datepicker_input-container {
+  width: 100%
+}
