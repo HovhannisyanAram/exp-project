@@ -131,4 +131,24 @@ export const toggleActiveStatusThunk = (task) => (dispatch) => {
   .finally(() => {
     dispatch({ type: actionTypes.TOGGLE_LOADING, isLoading: false })
   })
+};
+
+export const sortOrFilterTasksThunk = (queryData) => (dispatch) => {
+  let query = "?";
+  for (let key in queryData) {
+    query += key + "=" + queryData[key] + "&";
+  }
+  dispatch({ type: actionTypes.TOGGLE_LOADING, isLoading: true });
+  fetch(`http://localhost:3001/task` + query.slice(0, query.length - 1))
+  .then(res => res.json())
+  .then(data => {
+    if(data.error) throw data.error;
+    dispatch({ type: actionTypes.SET_TASKS, data })
+  })
+  .catch(error => {
+    dispatch({ type: actionTypes.SET_ERROR_MESSAGE, errorMessage: error.message });
+  })
+  .finally(() => {
+    dispatch({ type: actionTypes.TOGGLE_LOADING, isLoading: false })
+  })
 }

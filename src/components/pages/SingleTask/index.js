@@ -6,9 +6,9 @@ import styles from './singleTask.module.css';
 import dateFormatter from '../../../helpers/date';
 
   const initialState = {
+    loading: false,
     singleTask: null,
     isEditModal: false,
-    loading: false,
   };
 
   const reducer = (state, action) => {
@@ -55,10 +55,6 @@ import dateFormatter from '../../../helpers/date';
           console.error("Get single task request error", error);
         });
     },[id, history]);
-
-    useEffect(() => {
-      
-    })
 
     // Component Utils
     const {
@@ -109,11 +105,6 @@ import dateFormatter from '../../../helpers/date';
         console.error('Get single task request error', error);
       })
     }, [props.history]);
-
-    
-    useEffect(() => {
-
-    },[])
     
     if(!singleTask) return <Preloader />;
       

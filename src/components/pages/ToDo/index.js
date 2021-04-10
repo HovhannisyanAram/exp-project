@@ -83,14 +83,14 @@ const Todo = (props) => {
   }, [successMessage])
 
   const Tasks = tasks.map(task => {
-  return (
-    <Col
-      md={6}
-      xl={4}
-      xs={12}
-      key={task._id}
-      className="d-flex justify-content-center mt-4"
-    >
+    return (
+      <Col
+        md={6}
+        xl={4}
+        xs={12}
+        key={task._id}
+        className="d-flex justify-content-center mt-4"
+      >
       <Task
         task={task}
         disabled={!!removeTasks.size}
@@ -188,7 +188,7 @@ const mapStateToProps = (state) => {
     isConfirmModal,
     isOpenAddTaskModal,
     toggleOpenAddTaskModal
-  } = state;
+  } = state.todoState;
   return {
     tasks,
     loading,
