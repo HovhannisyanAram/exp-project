@@ -1,0 +1,32 @@
+h3 {
+  margin-top: 3%;
+  color:yellow;
+}
+.p {
+  margin-top: 3%;
+  color:yellow;
+}
+
+.experience {
+  margin-top: 2%;
+  color:rgb(81, 216, 171)
+}
+
+h1, h3, h4 {
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+h4 {
+  margin-top: 3%;
+  color:aqua
+}
+
+span {
+  font-style: italic;
+}
+
+.contacts {
+  margin-top: 3%;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  
+}

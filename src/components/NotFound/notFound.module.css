@@ -1,0 +1,9 @@
+.notFound {
+  height: 90vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: brown;
+  background-color: rgb(237 46 90);
+}

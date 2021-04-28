@@ -1,0 +1,11 @@
+.tasksWrapper {
+  display: flex;
+  justify-content: space-between;
+  width: 70%;
+  margin: 100px auto;
+}
+.task {
+  width:10px;
+  height:10px;
+  background-color: red;
+}

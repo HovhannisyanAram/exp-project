@@ -1,0 +1,19 @@
+.searchSection {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  padding: 50px 30px;
+  box-shadow: 0px 5px 15px rgb(126, 246, 255);
+}
+
+.datePicker {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  margin-top: 18px;
+  color:rgb(126, 246, 255)
+}
+
+h1{
+  color:rgb(126, 246, 255)
+}

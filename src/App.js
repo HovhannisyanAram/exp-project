@@ -1,25 +1,66 @@
-import logo from './logo.svg';
+import React, { Component } from 'react';
 import './App.css';
+import Navbar from './components/Navbar';
+import { Redirect, Route, Switch } from 'react-router-dom';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+import Todo from './components/pages/ToDo';
+import About from './components/pages/About';
+import NotFound from './components/NotFound';
+import Contact from './components/pages/Contact';
+import SingleTask from './components/pages/SingleTask';
+import ContactContextProvider from './context/ContactPageContext';
+
+const page = [
+  {
+    path: "/",
+    Component: Todo
+  },
+  {
+    path: "/contact",
+    Component: Contact,
+    Provider: ContactContextProvider
+  },
+  {
+    path: "/about",
+    Component: About
+  },
+  {
+    path: "/task/:id",
+    Component: SingleTask
+  },
+  {
+    path: "/404",
+    Component: NotFound
+  }
+]
+class App extends Component {
+  render() {
+    const pageRoutes = page.map((page, index) => {
+      const { Provider, Component } = page
+      return(
+        <Route
+        key={index}
+        path={page.path}
+        render={(props) => {
+          return(
+            Provider ? <Provider>
+            <Component {...props} />
+            </Provider> : <Component {...props} />)
+        }}
+          exact
+        />
+        );
+    })
+    return (
+        <div className="App">
+          <Navbar />
+          <Switch>
+            {pageRoutes}
+            <Redirect to="/404" />
+          </Switch>
+        </div>
+    );
+  };
+};
 
 export default App;
