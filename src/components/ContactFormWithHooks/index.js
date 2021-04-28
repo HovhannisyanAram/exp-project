@@ -48,7 +48,7 @@ const ContactForm = () => {
         className={styles.formGroup}
         key={index}
       >
-        <Form.Label>{input.label}</Form.Label>
+        <Form.Label style={{color: "aqua"}}>{input.label}</Form.Label>
         <Form.Control
           ref={!!!index ? nameInputRef : null}
           name={input.name}
@@ -73,7 +73,7 @@ const ContactForm = () => {
         </p>
         {inputs}
         <Button
-          variant="primary"
+          variant="outline-info"
           type="submit"
           onClick={handleSubmit}
           disabled={!isValid}

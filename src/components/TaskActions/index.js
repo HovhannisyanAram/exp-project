@@ -35,7 +35,7 @@ class TaskActions extends React.PureComponent {
     ) return;
     const formData = {...this.state};
     formData.date = dateFormatter(formData.date)
-    onSubmit(formData); 
+    onSubmit(formData, "singleTask"); 
   };
 
   handleSetDate = (date) => {

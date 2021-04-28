@@ -38,7 +38,7 @@ const Task = ({
         <Card.Text>Created_At: {dateFormatter(task.created_at)}</Card.Text>
         <div>
           <Button
-            variant="danger"
+            variant="outline-danger"
             disabled={disabled}
             onClick={() => handleDeleteOneTask(task._id)}
           >
@@ -46,7 +46,7 @@ const Task = ({
           </Button>
           <Button
             className="ml-3"
-            variant="warning"
+            variant="outline-warning"
             disabled={disabled}
             onClick={() => handleSetEditTask(task)}
           >
@@ -54,7 +54,7 @@ const Task = ({
           </Button>
           <Button
             className="ml-3"
-            variant="success"
+            variant="outline-success"
             disabled={disabled}
             onClick={() => toggleActiveTask(task)}
           >

@@ -115,7 +115,7 @@ const Todo = (props) => {
           <Row className="mt-4">
             <Col>
               <Button
-                variant="primary"
+                variant="outline-info"
                 onClick={toggleOpenAddTaskModal}
               >
                 Add task
@@ -129,14 +129,14 @@ const Todo = (props) => {
           <Row className="mt-5">
             <Col>
               <Button
-                variant="danger"
+                variant="outline-danger"
                 onClick={toggleOpenConfirmModal}
                 disabled={!!!removeTasks.size}
               >
                 Remove Selected
               </Button>
               <Button
-                variant="info"
+                variant="outline-info"
                 className="ml-4"
                 onClick={toggleCheckAllTasks}
                 disabled={!!!tasks.length}

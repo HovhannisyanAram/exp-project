@@ -1,166 +1,118 @@
-import React, { createRef } from "react";
-import styles from "./contactForm.module.css";
-import { withRouter } from "react-router-dom";
-import { Form, Button, Container } from "react-bootstrap";
-import {
-  maxLength,
-  minLength,
-  isRequired,
-  emailValid,
-  isAllValid, } from "../../helpers/validators"; 
-  
+import React, { useContext, useRef, useEffect } from 'react';
+import Preloader from '../Preloader';
+import { connect } from 'react-redux';
+import styles from './form.module.css';
+import { withRouter } from 'react-router-dom';
+import { Form, Button } from 'react-bootstrap';
+import actionTypes from '../../redux/actionTypes';
+import { submitContactFormThunk } from '../../redux/actions';
+import { ContactContext } from '../../Context/ContactPageContext';
+
 const inputsInfo = [
   {
-    name: "name",
-    controlId: "formBasicName",
-    label: "Name",
     type: "text",
+    name: "name",
+    label: "Name",
+    controlId: "formBasicName",
   },
   {
-    name: "email",
-    controlId: "formBasicEmail",
-    label: "Email",
     type: "email",
+    name: "email",
+    label: "Email",
+    controlId: "formBasicEmail",
   },
   {
-    name: "message",
-    controlId: "textareaFormContactPage",
-    label: "Message area",
-    as: "textarea",
     rows: 3,
     maxLength: 100,
-  }
-]
+    name: "message",
+    label: "Message",
+    as: "textarea",
+    controlId: "textareaForContactPage",
+  },
+];
 
-class ContactForm extends React.Component {
-  constructor(props) {
-    super(props);
-    this.inputRef = createRef();
-    this.state = {
-      name: {
-        value: "",
-        valid: false, 
-        error: null,
-      },
-      email: {
-        value: "",
-        valid: false, 
-        error: null,
-      },
-      message: {
-        value: "",
-        valid: false, 
-        error: null,
-      },
-      errorMessage: "",
-      // isValid: false,
-    };
-  };
+const ContactForm = (props) => {
+  const nameInputRef = useRef(null);
+  const context = useContext(ContactContext);
 
-  handleChange = (e) => {
-    const { name, value } = e.target;
-    let error = null;
-    
-    const maxLength25 = maxLength(25);
-    const minLength2 = minLength(2);
+  useEffect(() => {
+      nameInputRef.current.focus();
+  }, []);
 
-    switch (name) {
-      case "name":
-      case "email":
-      case "message":
-        error = isRequired(value) ||
-        (name === "email" && emailValid(value)) ||
-        minLength2(value) ||
-        maxLength25(value);
-        break;
-        default:;
-    };
-    this.setState({
-      [name]: {
-        value,
-        valid: !!!error,
-        error,
-      },
-      isValid: isAllValid(this.state)
-    })
-  };
+  const {
+    formData,
+    loading,
+    // functions
+    changeInputValue,
+    submitContactForm
+  } = props;
 
-  handleSubmit = () => {
-    const formData = { ...this.state };
-    delete formData.errorMessage;
-    for (let key in formData) {
-      formData[key] = formData[key].value;
-    };
-    (async () => {
-      try {
-        const response = await fetch("http://localhost:3001/form", {
-          method: "POST",
-          body: JSON.stringify(formData),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-      const data = await response.json();
-      if(data.error) throw data.error;
-      this.props.history.push("/")
-      } catch(error) {
-        this.setState({
-          errorMessage: error.message
-        })
-        console.error("Submit contact form request error", error)
-      };
-    })();
-  };
+  const { 
+    errorMessage
+  } = context;
+  const { name, email, message } = formData;
+  const isValid = name.valid && email.valid && message.valid;
 
-  componentDidMount() {
-    this.inputRef.current.focus();
-  };
-
-  render() {
-    const {name, email, message, errorMessage} = this.state;
-    const isValid = name.valid && email.valid && message.valid;
-    const inputs = inputsInfo.map((input, index) => {
-      return(
+  const inputs = inputsInfo.map((input, index) => {
+      return (
         <Form.Group
-          key={index}
+          key={index} 
           controlId={input.controlId}
           className={styles.formGroup}
         >
           <Form.Label>{input.label}</Form.Label>
           <Form.Control
-            as={input.as}
-            name={input.name}
-            type={input.type}
-            rows={input.rows}
-            placeholder={input.label}
-            maxLength={input.maxLength}
-            onChange={this.handleChange}
-            value={this.state[input.name].value}
-            ref={!index ? this.inputRef : null}
+              as={input.as}
+              name={input.name}
+              type={input.type}
+              rows={input.rows}
+              onChange={(e) => changeInputValue(e.target)}
+              placeholder={input.label}
+              value={formData[input.name].value}
+              ref={!!!index ? nameInputRef : null}
+
           />
-          <Form.Text style={{color: "red"}}>{this.state[input.name].error}</Form.Text>
+          <Form.Text style={{ color: "red" }}>{formData[input.name].error}</Form.Text>
         </Form.Group>
-      )
-    })
+
+      );
+  })
     return (
-      <Container className={styles.container}>
+      <div style={{ width: "40%", margin: "0 auto" }}>
         <Form onSubmit={(e) => e.preventDefault()}>
-          <p style={{color: "red"}}>
-            {errorMessage}
+          <p style={{ color: "#fb3838", textTransform: "uppercase" }}>
+              {errorMessage}
           </p>
           {inputs}
           <Button
-            variant="primary"
-            type="submit"
-            onClick={this.handleSubmit}
-            disabled={!isValid}
+              variant="outline-primary"
+              type="submit"
+              onClick={() => submitContactForm(formData, props.history)}
+              disabled={!isValid}
           >
-            Submit
-          </Button>
+              Submit
+        </Button>
         </Form>
-      </Container>
+        {
+          loading && <Preloader />
+        }
+      </div>
     );
+};
+
+
+const mapStateToProps = (state) => {
+  return{
+    formData: state.contactState.formData,
+    loading: state.todoState.loading
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return{
+    changeInputValue: (target) => dispatch({ type: actionTypes.CHANGE_INPUT_VALUE, target }),
+    submitContactForm: (formData, history) => dispatch(submitContactFormThunk(formData, history))
   }
 }
 
-export default withRouter(ContactForm);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(ContactForm));

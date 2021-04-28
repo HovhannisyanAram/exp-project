@@ -10,10 +10,10 @@ const Confirm = (props) => {
           <Modal.Title>{message}</Modal.Title>
         </Modal.Header>
         <Modal.Footer>
-          <Button variant="secondary" onClick={onHide}>
+          <Button variant="outline-secondary" onClick={onHide}>
             Cancel
           </Button>
-          <Button variant="danger" onClick={onSubmit}>
+          <Button variant="outline-danger" onClick={onSubmit}>
             Confirm
           </Button>
         </Modal.Footer>

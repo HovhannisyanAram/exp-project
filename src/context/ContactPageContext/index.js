@@ -37,8 +37,7 @@ const ContactContextProvider = ({
 
     const contactFormData = { ...formData };
 
-    const isValid =
-      contactFormData.name.valid &&
+    const isValid = contactFormData.name.valid &&
       contactFormData.email.valid &&
       contactFormData.message.valid;
 

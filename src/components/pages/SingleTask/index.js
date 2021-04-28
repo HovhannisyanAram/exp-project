@@ -1,110 +1,32 @@
-import React, { useReducer, useEffect, useCallback } from 'react';
+import React, { useEffect } from 'react';
+import { connect } from 'react-redux';
 import Preloader from '../../Preloader';
 import { Button } from 'react-bootstrap';
 import TaskActions from '../../TaskActions';
 import styles from './singleTask.module.css';
 import dateFormatter from '../../../helpers/date';
+import {
+  editTaskThunk,
+  setSingleTaskThunk, 
+  deleteOneTaskThunk,
+  // toggleEditModalOfSingle
+} from '../../../redux/actions'
 
-  const initialState = {
-    loading: false,
-    singleTask: null,
-    isEditModal: false,
-  };
-
-  const reducer = (state, action) => {
-    switch (action.type) {
-      case "toggleEditModal":
-        return {
-          ...state,
-          isEditModal: !state.isEditModal,
-        };
-      case "toggleLoading":
-        return {
-          ...state,
-          loading: action.loading
-        };
-      case "setSingleTask":
-        return {
-          ...state,
-          singleTask: action.data,
-        };
-      default:
-        throw new Error();
-    }
-  }
+const SingleTask = (props) => {
   
-  const SingleTask = (props) => {
-    // Reducer
-    const [state, dispatch] = useReducer(reducer, initialState);
-    // Effects
-    const { id } = props.match.params;
-    const { history } = props;
-    useEffect(() => {
-      dispatch({ type: "toggleLoading", loading: true });
-      fetch(`http://localhost:3001/task/${id}`)
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.error) {
-            throw data.error;
-          }
-          dispatch({ type: "setSingleTask", data: data });
-          dispatch({ type: "toggleLoading", loading: false });
-        })
-        .catch((error) => {
-          history.push("/404");
-          console.error("Get single task request error", error);
-        });
-    },[id, history]);
-
-    // Component Utils
-    const {
-      singleTask,
-      isEditModal,
-      loading,
-    } = state;
-
-    const handleEditTask = useCallback((formData) => {
-      dispatch({ type: "toggleLoading", loading: true });
-      fetch("http://localhost:3001/task/" + formData._id, {
-        method: "PUT",
-        body: JSON.stringify(formData),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.error) {
-            throw data.error;
-          };
-          dispatch({ type: "setSingleTask", data: data });
-          dispatch({ type: "toggleEditModal" });
-        })
-        .catch((error) => {
-          console.error("Single task page, Edit task error", error);
-        })
-        .finally(() => {
-          dispatch({ type: "toggleLoading", loading: false });
-        });
-    },[]);
-
-    const handleDeleteTask = useCallback((id) => {
-      dispatch({ type: "toggleLoading", loading: true });
-      fetch(`http://localhost:3001/task/${id}`, {
-        method: "DELETE"
-      })
-      .then(res => res.json())
-      .then(data => {
-        if(data.error) {
-          throw data.error
-        };
-        props.history.push('/');
-      })
-      .catch(error => {
-        dispatch({ type: "toggleLoading", loading: false });
-        console.error('Get single task request error', error);
-      })
-    }, [props.history]);
+  // Effects
+  const { id } = props.match.params;
+  const { history, setSingleTask } = props;
+  useEffect(() => {
+    setSingleTask(id, history)
+  },[id, history, setSingleTask]);
+  
+  const {
+    // state
+    loading,
+    singleTask,
+    isEditModal,
+  } = props;
     
     if(!singleTask) return <Preloader />;
       
@@ -136,17 +58,15 @@ import dateFormatter from '../../../helpers/date';
             </p>
             <div>
               <Button
-                style={{backgroundColor: "#ff0018", border: 0}}
-                variant="info"
-                onClick={() => handleDeleteTask(singleTask._id)}
+                variant="outline-danger"
+                onClick={() => props.deleteTask(singleTask._id, history)}
               >
                 Delete
               </Button>
               <Button
-                style={{backgroundColor: "rgb(0 240 255)", border: 0}}
                 className="ml-2"
-                variant="warning"
-                onClick={() => dispatch({ type: "toggleEditModal" }) }
+                variant="outline-warning"
+                onClick={props.toggleEditModal}
               >
                 Edit
               </Button>
@@ -156,8 +76,8 @@ import dateFormatter from '../../../helpers/date';
         {
           isEditModal && <TaskActions
             editableTask={singleTask}
-            onHide={() => dispatch({ type: "toggleEditModal" }) }
-            onSubmit={handleEditTask}
+            onHide={props.toggleEditModal}
+            onSubmit={props.editTask}
           />
         }
         {
@@ -165,6 +85,24 @@ import dateFormatter from '../../../helpers/date';
         }
       </>
     );
+};
+
+  const mapStateToProps = (state) => {
+    const { singleTask, isEditModal } = state.singleTaskState;
+    return {
+      singleTask,
+      isEditModal,
+      loading: state.todoState.loading
+    }
   };
+
+  const mapDispatchToProps = (dispatch) => {
+    return {
+      setSingleTask: (id, history) => dispatch(setSingleTaskThunk(id, history)),
+      deleteTask: (_id, history) => dispatch(deleteOneTaskThunk(_id, history)),
+      editTask: (singleTask, page) => dispatch(editTaskThunk(singleTask, page)),
+      toggleEditModal: () => dispatch({ type: "TOGGLE_EDIT_MODAL" }),
+    } 
+  }
   
-  export default SingleTask;
+  export default connect(mapStateToProps, mapDispatchToProps)(SingleTask);
